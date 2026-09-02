@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lovepreet AI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 25px 15px;
+    }
 
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    video {
+      width: 100%;
+      max-width: 420px;
+      border-radius: 20px;
+      background: #000;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 14px 22px;
+      border: 0;
+      border-radius: 12px;
+      font-size: 17px;
+      margin-top: 15px;
+    }
+
+    #result {
+      margin: 20px auto;
+      padding: 18px;
+      max-width: 380px;
+      background: white;
+      border-radius: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>❤️ Lovepreet AI</h1>
+<p>Face Detection App</p>
+
+<button onclick="startCamera()">📷 Start Camera</button>
+
+<video id="camera" autoplay playsinline></video>
+
+<div id="result">
+  <p id="status">Camera start karo.</p>
+  <p id="age">Estimated Age: --</p>
+</div>
+
+<script>
+async function startCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true
+    });
+
+    document.getElementById("camera").srcObject = stream;
+    document.getElementById("status").innerText =
+      "Camera working ✅";
+
+  } catch (error) {
+    document.getElementById("status").innerText =
+      "Camera permission nahi mili.";
+  }
+}
+</script>
+
+</body>
+</html>
