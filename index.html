@@ -1,355 +1,456 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
 
-<link rel="manifest" href="/manifest.json">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="/manifest.json">
 
-<title>Lovepreet AI</title>
+  <meta name="theme-color" content="#0f172a">
 
-<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+  <title>Lovepreet AI</title>
 
-<style>
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 
-*{
-  box-sizing:border-box;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body{
-  margin:0;
-  padding:24px 14px;
-  font-family:Arial,sans-serif;
-  background:#0f172a;
-  color:white;
-}
+    body {
+      margin: 0;
+      padding: 20px 14px 40px;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+    }
 
-.app{
-  max-width:500px;
-  margin:auto;
-}
+    .app {
+      max-width: 520px;
+      margin: auto;
+    }
 
-h1{
-  text-align:center;
-  margin:8px 0;
-  font-size:32px;
-}
+    h1 {
+      text-align: center;
+      margin: 8px 0;
+      font-size: 31px;
+    }
 
-.subtitle{
-  text-align:center;
-  color:#cbd5e1;
-  margin-bottom:22px;
-}
+    .subtitle {
+      text-align: center;
+      color: #cbd5e1;
+      margin-bottom: 20px;
+    }
 
-.camera-box{
-  position:relative;
-  width:100%;
-  overflow:hidden;
-  border-radius:24px;
-  background:#000;
-  box-shadow:0 15px 40px rgba(0,0,0,.35);
-}
+    .camera-box {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 24px;
+      background: #000;
+      box-shadow: 0 15px 40px rgba(0,0,0,.35);
+    }
 
-video,
-#photo{
-  width:100%;
-  display:block;
-  border-radius:24px;
-}
+    video,
+    #photo {
+      width: 100%;
+      display: block;
+      border-radius: 24px;
+    }
 
-video{
-  transform:scaleX(-1);
-}
+    video {
+      transform: scaleX(-1);
+    }
 
-canvas{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  transform:scaleX(-1);
-}
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform: scaleX(-1);
+      pointer-events: none;
+    }
 
-button{
-  width:100%;
-  padding:15px;
-  margin-top:10px;
-  border:none;
-  border-radius:15px;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
-}
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-.primary{
-  background:white;
-  color:#0f172a;
-}
+    .primary {
+      background: white;
+      color: #0f172a;
+    }
 
-.secondary{
-  background:#1e293b;
-  color:white;
-}
+    .secondary {
+      background: #1e293b;
+      color: white;
+    }
 
-#fileInput{
-  display:none;
-}
+    .green {
+      background: #16a34a;
+      color: white;
+    }
 
-#photo{
-  display:none;
-}
+    #fileInput {
+      display: none;
+    }
 
-.result{
-  display:none;
-  margin-top:20px;
-  padding:20px;
-  border-radius:22px;
-  background:white;
-  color:#0f172a;
-}
+    #photo {
+      display: none;
+    }
 
-.score{
-  font-size:42px;
-  font-weight:bold;
-  margin:8px 0 18px;
-}
+    #status {
+      text-align: center;
+      color: #cbd5e1;
+      margin: 15px 0;
+    }
 
-.item{
-  padding:13px;
-  margin:8px 0;
-  border-radius:12px;
-  background:#f1f5f9;
-}
+    .result {
+      display: none;
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 22px;
+      background: white;
+      color: #0f172a;
+    }
 
-#status{
-  text-align:center;
-  color:#cbd5e1;
-  margin:15px 0;
-}
+    .score {
+      font-size: 48px;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0 20px;
+    }
 
+    .item {
+      padding: 13px;
+      margin: 8px 0;
+      border-radius: 12px;
+      background: #f1f5f9;
+    }
 
-/* FUNNY POPUP */
+    .meter {
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
 
-#funnyPopup{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.7);
-  z-index:9999;
-  padding:20px;
-}
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      background: #16a34a;
+      transition: width .5s;
+    }
 
-.popupBox{
-  width:100%;
-  max-width:330px;
-  background:white;
-  color:#0f172a;
-  border-radius:25px;
-  padding:25px;
-  text-align:center;
-  animation:pop .25s ease;
-}
+    .tips {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 15px;
+      background: #e0f2fe;
+    }
 
-.popupEmoji{
-  font-size:70px;
-}
+    .history {
+      display: none;
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 20px;
+      background: white;
+      color: #0f172a;
+    }
 
-.popupBox h2{
-  margin:10px 0;
-}
+    .history-item {
+      padding: 10px;
+      margin: 7px 0;
+      background: #f1f5f9;
+      border-radius: 10px;
+    }
 
-.popupBox p{
-  color:#64748b;
-}
+    .profile-box {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 18px;
+      background: #f8fafc;
+      color: #0f172a;
+    }
 
-.popupClose{
-  background:#0f172a;
-  color:white;
-  margin-top:15px;
-}
+    .popup {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,.75);
+      z-index: 9999;
+    }
 
-@keyframes pop{
+    .popup-content {
+      background: white;
+      color: #0f172a;
+      padding: 30px;
+      border-radius: 25px;
+      text-align: center;
+      width: 85%;
+      max-width: 350px;
+      animation: pop .25s ease;
+    }
 
-  from{
-    transform:scale(.7);
-    opacity:0;
-  }
+    .emoji {
+      font-size: 65px;
+    }
 
-  to{
-    transform:scale(1);
-    opacity:1;
-  }
+    @keyframes pop {
+      from {
+        transform: scale(.7);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
 
-}
+    .guide {
+      position: absolute;
+      inset: 10%;
+      border: 3px dashed rgba(255,255,255,.7);
+      border-radius: 50%;
+      pointer-events: none;
+    }
 
-</style>
+    .small {
+      font-size: 13px;
+      color: #64748b;
+    }
+  </style>
 </head>
-
 
 <body>
 
 <div class="app">
 
-<h1>❤️ Lovepreet AI</h1>
+  <h1>❤️ Lovepreet AI</h1>
 
-<div class="subtitle">
-Smart Face & Photo Analyzer
+  <div class="subtitle">
+    Smart Face & Photo Quality Analyzer
+  </div>
+
+  <div class="camera-box">
+
+    <video id="camera"
+           autoplay
+           muted
+           playsinline></video>
+
+    <canvas id="overlay"></canvas>
+
+    <img id="photo">
+
+    <div class="guide" id="guide"></div>
+
+  </div>
+
+  <button class="primary"
+          onclick="startCamera()">
+    📷 Start Camera
+  </button>
+
+  <button class="secondary"
+          onclick="takePhoto()">
+    📸 Take Photo
+  </button>
+
+  <button class="secondary"
+          onclick="document.getElementById('fileInput').click()">
+    🖼️ Upload Photo
+  </button>
+
+  <input id="fileInput"
+         type="file"
+         accept="image/*"
+         onchange="uploadPhoto(event)">
+
+  <button class="primary"
+          onclick="analyzeNow()">
+    🔎 Analyze Now
+  </button>
+
+  <button class="green"
+          onclick="checkProfilePicture()">
+    👤 Profile-Pic Check
+  </button>
+
+  <button class="secondary"
+          onclick="location.reload()">
+    🔄 Scan Again
+  </button>
+
+  <p id="status">
+    Start Camera dabao ya photo upload karo.
+  </p>
+
+  <div class="result" id="result">
+
+    <h2>✨ Analysis Result</h2>
+
+    <div>Overall Quality</div>
+
+    <div class="score" id="quality">
+      --
+    </div>
+
+    <div class="item">
+      👥 Faces Found:
+      <b id="faceCount">--</b>
+    </div>
+
+    <div class="item">
+      🎯 Detection Confidence:
+      <b id="confidence">--</b>
+
+      <div class="meter">
+        <div class="meter-fill"
+             id="confidenceMeter"></div>
+      </div>
+    </div>
+
+    <div class="item">
+      💡 Lighting:
+      <b id="lighting">--</b>
+
+      <div class="meter">
+        <div class="meter-fill"
+             id="lightingMeter"></div>
+      </div>
+    </div>
+
+    <div class="item">
+      🔍 Face Size:
+      <b id="faceSize">--</b>
+    </div>
+
+    <div class="item">
+      📍 Face Position:
+      <b id="facePosition">--</b>
+    </div>
+
+    <div class="item">
+      👀 Face Visibility:
+      <b id="visibility">--</b>
+    </div>
+
+    <div class="item">
+      📐 Composition:
+      <b id="composition">--</b>
+    </div>
+
+    <div class="item">
+      🖼️ Background:
+      <b id="background">--</b>
+    </div>
+
+    <div class="item">
+      🌑 Shadow Check:
+      <b id="shadow">--</b>
+    </div>
+
+    <div class="item">
+      🔬 Sharpness:
+      <b id="sharpness">--</b>
+    </div>
+
+    <div class="item">
+      📱 Photo Readiness:
+      <b id="readiness">--</b>
+    </div>
+
+    <div class="tips">
+      💡 <b>AI Photo Coach</b>
+      <p id="suggestion">--</p>
+    </div>
+
+    <button class="secondary"
+            onclick="copyReport()">
+      📋 Copy Report
+    </button>
+
+    <button class="secondary"
+            onclick="shareResult()">
+      📤 Share Result
+    </button>
+
+  </div>
+
+  <div class="profile-box"
+       id="profileBox">
+
+    <h2>👤 Profile-Pic Check</h2>
+
+    <p id="profileResult">
+      --
+    </p>
+
+    <p class="small">
+      Best result ke liye clear, centered aur
+      properly framed photo use karo.
+    </p>
+
+  </div>
+
+  <div class="history"
+       id="history">
+
+    <h2>🏆 Score History</h2>
+
+    <div id="historyList">
+      No scans yet.
+    </div>
+
+    <button class="secondary"
+            onclick="clearHistory()">
+      🗑️ Clear History
+    </button>
+
+  </div>
+
 </div>
 
 
-<div class="camera-box">
+<!-- FUN POPUP -->
 
-<video
-id="camera"
-autoplay
-muted
-playsinline>
-</video>
+<div class="popup"
+     id="popup">
 
-<canvas id="overlay"></canvas>
+  <div class="popup-content">
 
-<img id="photo">
+    <div class="emoji"
+         id="popupEmoji">
+      🤦😂
+    </div>
 
-</div>
+    <h2 id="popupTitle">
+      Oops!
+    </h2>
 
+    <p id="popupText">
+      Kuch improve karna padega 😅
+    </p>
 
-<button
-class="primary"
-onclick="startCamera()">
-📷 Start Camera
-</button>
+    <button class="primary"
+            onclick="closePopup()">
+      👍 OK
+    </button>
 
-
-<button
-class="secondary"
-onclick="takePhoto()">
-📸 Take Photo
-</button>
-
-
-<button
-class="secondary"
-onclick="document.getElementById('fileInput').click()">
-🖼️ Upload Photo
-</button>
-
-
-<input
-id="fileInput"
-type="file"
-accept="image/*"
-onchange="uploadPhoto(event)"
->
-
-
-<button
-class="primary"
-onclick="analyzeNow()">
-🔎 Analyze Now
-</button>
-
-
-<button
-class="secondary"
-onclick="location.reload()">
-🔄 Scan Again
-</button>
-
-
-<p id="status">
-Start Camera dabao.
-</p>
-
-
-<div
-class="result"
-id="result">
-
-<h2>✨ Analysis Result</h2>
-
-<div>Overall Quality</div>
-
-<div
-class="score"
-id="quality">
---
-</div>
-
-
-<div class="item">
-👥 Faces Found:
-<b id="faceCount">--</b>
-</div>
-
-
-<div class="item">
-🎯 Detection Confidence:
-<b id="confidence">--</b>
-</div>
-
-
-<div class="item">
-💡 Lighting:
-<b id="lighting">--</b>
-</div>
-
-
-<div class="item">
-🔍 Face Size:
-<b id="faceSize">--</b>
-</div>
-
-
-<div class="item">
-📍 Face Position:
-<b id="facePosition">--</b>
-</div>
-
-
-<div class="item">
-📸 Image Status:
-<b id="imageStatus">--</b>
-</div>
-
-
-<div class="item">
-💡 Suggestion:
-<b id="suggestion">--</b>
-</div>
-
-</div>
-
-</div>
-
-
-<!-- FUNNY POPUP -->
-
-<div id="funnyPopup">
-
-<div class="popupBox">
-
-<div
-class="popupEmoji"
-id="popupEmoji">
-🤦😂
-</div>
-
-<h2 id="popupTitle">
-Oye! Sahi photo daal 😄
-</h2>
-
-<p id="popupText">
-Lovepreet AI ko face nahi mila.
-</p>
-
-<button
-class="popupClose"
-onclick="closeFunnyPopup()">
-😂 Okay
-</button>
-
-</div>
+  </div>
 
 </div>
 
@@ -357,597 +458,1132 @@ onclick="closeFunnyPopup()">
 <script>
 
 const video =
-document.getElementById("camera");
+  document.getElementById("camera");
 
 const canvas =
-document.getElementById("overlay");
+  document.getElementById("overlay");
 
 const photo =
-document.getElementById("photo");
+  document.getElementById("photo");
 
 const statusText =
-document.getElementById("status");
+  document.getElementById("status");
+
+const guide =
+  document.getElementById("guide");
 
 let detections = [];
-
 let running = false;
-
 let currentImage = null;
-
 let aiLoaded = false;
 
 
-/* FUNNY POPUP */
+/* =========================
+   AI LOAD
+========================= */
 
-function showFunnyPopup(
-emoji="🤦😂",
-title="Oye! Sahi photo daal 😄",
-text="Lovepreet AI ko face nahi mila."
-){
+async function loadAI() {
 
-document.getElementById("popupEmoji")
-.innerText=emoji;
+  if (aiLoaded) return;
 
-document.getElementById("popupTitle")
-.innerText=title;
+  statusText.innerText =
+    "🤖 AI loading...";
 
-document.getElementById("popupText")
-.innerText=text;
+  await faceapi.nets.tinyFaceDetector.loadFromUri(
+    "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
+  );
 
-document.getElementById("funnyPopup")
-.style.display="flex";
+  aiLoaded = true;
+}
+
+
+/* =========================
+   CAMERA
+========================= */
+
+async function startCamera() {
+
+  try {
+
+    await loadAI();
+
+    const stream =
+      await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "user"
+        }
+      });
+
+    video.srcObject = stream;
+
+    video.style.display = "block";
+    photo.style.display = "none";
+
+    guide.style.display = "block";
+
+    video.onloadedmetadata = () => {
+
+      canvas.width =
+        video.videoWidth;
+
+      canvas.height =
+        video.videoHeight;
+
+      running = true;
+
+      currentImage = video;
+
+      statusText.innerText =
+        "🙂 Face ko circle ke andar lao";
+
+      detectFaces();
+
+    };
+
+  } catch (error) {
+
+    console.error(error);
+
+    showPopup(
+      "😅",
+      "Camera Error",
+      "Camera start nahi ho paaya."
+    );
+
+    statusText.innerText =
+      "❌ Camera start nahi hua.";
+
+  }
 
 }
 
 
-function closeFunnyPopup(){
+/* =========================
+   LIVE FACE DETECTION
+========================= */
 
-document.getElementById("funnyPopup")
-.style.display="none";
+async function detectFaces() {
 
-}
+  if (!running) return;
 
+  try {
 
-/* LOAD AI */
+    detections =
+      await faceapi.detectAllFaces(
+        video,
+        new faceapi.TinyFaceDetectorOptions()
+      );
 
-async function loadAI(){
+    drawBoxes();
 
-if(aiLoaded) return;
+    if (detections.length > 0) {
 
-await faceapi.nets.tinyFaceDetector.loadFromUri(
-"https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
-);
+      statusText.innerText =
+        "✅ " +
+        detections.length +
+        " face detected";
 
-aiLoaded=true;
+    } else {
 
-}
+      statusText.innerText =
+        "🙂 Face ko circle ke andar lao";
 
+    }
 
-/* CAMERA */
+  } catch (error) {
 
-async function startCamera(){
+    console.error(error);
 
-try{
+  }
 
-statusText.innerText=
-"🤖 AI loading...";
-
-await loadAI();
-
-const stream=
-await navigator.mediaDevices.getUserMedia({
-video:true
-});
-
-video.srcObject=stream;
-
-video.style.display="block";
-
-photo.style.display="none";
-
-video.onloadedmetadata=()=>{
-
-canvas.width=
-video.videoWidth;
-
-canvas.height=
-video.videoHeight;
-
-running=true;
-
-currentImage=video;
-
-statusText.innerText=
-"🙂 Face camera ke saamne lao";
-
-detectFaces();
-
-};
-
-}catch(error){
-
-console.error(error);
-
-statusText.innerText=
-"❌ Camera ya AI start nahi hua.";
-
-showFunnyPopup(
-"😅",
-"Oops!",
-"Camera start nahi hua. Permission check karo."
-);
-
-}
+  setTimeout(
+    detectFaces,
+    500
+  );
 
 }
 
 
-/* FACE DETECTION */
+/* =========================
+   DRAW BOXES
+========================= */
 
-async function detectFaces(){
+function drawBoxes() {
 
-if(!running) return;
+  const ctx =
+    canvas.getContext("2d");
 
-try{
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
 
-detections=
-await faceapi.detectAllFaces(
-video,
-new faceapi.TinyFaceDetectorOptions()
-);
+  detections.forEach(d => {
 
-drawBoxes();
+    const box =
+      d.box;
 
+    ctx.strokeStyle =
+      "#00ff00";
 
-if(detections.length>0){
+    ctx.lineWidth = 5;
 
-statusText.innerText=
-"✅ "+
-detections.length+
-" face detected";
+    ctx.strokeRect(
+      box.x,
+      box.y,
+      box.width,
+      box.height
+    );
 
-}else{
-
-statusText.innerText=
-"🙂 Face camera ke saamne lao";
-
-}
-
-}catch(error){
-
-console.error(error);
-
-}
-
-setTimeout(
-detectFaces,
-500
-);
+  });
 
 }
 
 
-/* DRAW BOX */
+/* =========================
+   TAKE PHOTO
+========================= */
 
-function drawBoxes(){
+function takePhoto() {
 
-const ctx=
-canvas.getContext("2d");
+  if (!video.srcObject) {
 
-ctx.clearRect(
-0,
-0,
-canvas.width,
-canvas.height
-);
+    showPopup(
+      "📷",
+      "Camera Start Karo",
+      "Pehle Start Camera dabao."
+    );
 
-detections.forEach(d=>{
+    return;
 
-const box=d.box;
+  }
 
-ctx.strokeStyle="#00ff00";
+  const tempCanvas =
+    document.createElement("canvas");
 
-ctx.lineWidth=5;
+  tempCanvas.width =
+    video.videoWidth;
 
-ctx.strokeRect(
-box.x,
-box.y,
-box.width,
-box.height
-);
+  tempCanvas.height =
+    video.videoHeight;
 
-});
+  const ctx =
+    tempCanvas.getContext("2d");
 
-}
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    tempCanvas.width,
+    tempCanvas.height
+  );
 
+  photo.src =
+    tempCanvas.toDataURL(
+      "image/jpeg",
+      0.92
+    );
 
-/* TAKE PHOTO */
+  photo.style.display =
+    "block";
 
-function takePhoto(){
+  video.style.display =
+    "none";
 
-if(!video.srcObject){
+  guide.style.display =
+    "none";
 
-showFunnyPopup(
-"📷",
-"Pehle camera start karo!",
-"Uske baad photo capture karna."
-);
+  currentImage =
+    photo;
 
-return;
+  running = false;
 
-}
-
-const tempCanvas=
-document.createElement("canvas");
-
-tempCanvas.width=
-video.videoWidth;
-
-tempCanvas.height=
-video.videoHeight;
-
-const ctx=
-tempCanvas.getContext("2d");
-
-ctx.drawImage(
-video,
-0,
-0,
-tempCanvas.width,
-tempCanvas.height
-);
-
-photo.src=
-tempCanvas.toDataURL("image/jpeg");
-
-photo.style.display="block";
-
-video.style.display="none";
-
-currentImage=photo;
-
-running=false;
-
-statusText.innerText=
-"📸 Photo captured. Analyze Now dabao.";
+  statusText.innerText =
+    "📸 Photo captured. Analyze Now dabao.";
 
 }
 
 
-/* UPLOAD PHOTO */
+/* =========================
+   UPLOAD PHOTO
+========================= */
 
-function uploadPhoto(event){
+function uploadPhoto(event) {
 
-const file=
-event.target.files[0];
+  const file =
+    event.target.files[0];
 
-if(!file) return;
+  if (!file) return;
 
+  const reader =
+    new FileReader();
 
-const reader=
-new FileReader();
+  reader.onload =
+    async function(e) {
 
+      photo.src =
+        e.target.result;
 
-reader.onload=
-async function(e){
+      photo.onload =
+        async function() {
 
-photo.src=e.target.result;
+          video.style.display =
+            "none";
 
+          photo.style.display =
+            "block";
 
-photo.onload=
-async function(){
+          guide.style.display =
+            "none";
 
-video.style.display="none";
+          currentImage =
+            photo;
 
-photo.style.display="block";
+          running = false;
 
-currentImage=photo;
+          statusText.innerText =
+            "🖼️ Photo loaded.";
 
-running=false;
+          try {
 
-statusText.innerText=
-"🖼️ Photo loaded. Analyze Now dabao.";
+            await loadAI();
 
+            detections =
+              await faceapi.detectAllFaces(
+                photo,
+                new faceapi.TinyFaceDetectorOptions()
+              );
 
-try{
+            if (!detections.length) {
 
-await loadAI();
+              showPopup(
+                "🤦😂",
+                "Face Nahi Mila",
+                "Clear aur properly framed photo try karo."
+              );
 
+            }
 
-detections=
-await faceapi.detectAllFaces(
-photo,
-new faceapi.TinyFaceDetectorOptions()
-);
+          } catch (error) {
 
+            console.error(error);
 
-if(!detections.length){
+            detections = [];
 
-showFunnyPopup(
-"🤦😂",
-"Arre bhai!",
-"Is photo mein face detect nahi hua 😄"
-);
+          }
 
-}
+        };
 
+    };
 
-}catch(error){
-
-console.error(error);
-
-detections=[];
-
-showFunnyPopup(
-"🤦😂",
-"Photo samajh nahi aayi!",
-"Ek clear photo try karo."
-);
-
-}
-
-};
-
-};
-
-reader.readAsDataURL(file);
+  reader.readAsDataURL(file);
 
 }
 
 
-/* ANALYZE */
+/* =========================
+   ANALYSIS
+========================= */
 
-function analyzeNow(){
+function analyzeNow() {
 
-if(!detections.length){
+  if (!currentImage) {
 
-showFunnyPopup(
-"🤦😂",
-"Oye! Sahi photo daal 😄",
-"Face detect nahi hua. Clear photo try karo."
-);
+    showPopup(
+      "📸",
+      "Photo Chahiye",
+      "Pehle camera se photo lo ya upload karo."
+    );
 
-return;
+    return;
+
+  }
+
+  if (!detections.length) {
+
+    showPopup(
+      "🤦😂",
+      "Face Nahi Mila",
+      "Face clearly visible wali photo try karo."
+    );
+
+    return;
+
+  }
+
+  const first =
+    detections[0];
+
+  const confidence =
+    Math.round(
+      first.score * 100
+    );
+
+  const box =
+    first.box;
+
+  const imageWidth =
+    currentImage.videoWidth ||
+    currentImage.naturalWidth;
+
+  const imageHeight =
+    currentImage.videoHeight ||
+    currentImage.naturalHeight;
+
+
+  /* FACE AREA */
+
+  const faceArea =
+    (box.width * box.height) /
+    (imageWidth * imageHeight);
+
+  let faceSize;
+
+  if (faceArea > 0.12) {
+
+    faceSize =
+      "Good 👍";
+
+  } else if (faceArea > 0.06) {
+
+    faceSize =
+      "Okay 🙂";
+
+  } else {
+
+    faceSize =
+      "Face thoda door hai";
+
+  }
+
+
+  /* POSITION */
+
+  const centerX =
+    box.x +
+    box.width / 2;
+
+  const centerY =
+    box.y +
+    box.height / 2;
+
+  const imageCenterX =
+    imageWidth / 2;
+
+  const imageCenterY =
+    imageHeight / 2;
+
+  const distance =
+    Math.sqrt(
+      Math.pow(
+        centerX - imageCenterX,
+        2
+      ) +
+      Math.pow(
+        centerY - imageCenterY,
+        2
+      )
+    );
+
+  const maxDistance =
+    Math.sqrt(
+      Math.pow(imageCenterX, 2) +
+      Math.pow(imageCenterY, 2)
+    );
+
+  const positionScore =
+    Math.max(
+      0,
+      1 - distance / maxDistance
+    );
+
+
+  let facePosition;
+
+  if (positionScore > 0.65) {
+
+    facePosition =
+      "Centered ✅";
+
+  } else {
+
+    facePosition =
+      "Move face toward center";
+
+  }
+
+
+  /* CONFIDENCE / LIGHT */
+
+  let lighting;
+
+  if (confidence >= 88) {
+
+    lighting =
+      "Good 👍";
+
+  } else if (confidence >= 70) {
+
+    lighting =
+      "Okay 🙂";
+
+  } else {
+
+    lighting =
+      "Improve lighting 💡";
+
+  }
+
+
+  /* VISIBILITY */
+
+  let visibility;
+
+  if (confidence >= 90) {
+
+    visibility =
+      "Excellent 👀";
+
+  } else if (confidence >= 75) {
+
+    visibility =
+      "Good 👍";
+
+  } else {
+
+    visibility =
+      "Needs improvement";
+
+  }
+
+
+  /* COMPOSITION */
+
+  let composition;
+
+  if (
+    positionScore > 0.7 &&
+    faceArea > 0.08
+  ) {
+
+    composition =
+      "Excellent 📐";
+
+  } else if (
+    positionScore > 0.5
+  ) {
+
+    composition =
+      "Good 👍";
+
+  } else {
+
+    composition =
+      "Reposition photo";
+
+  }
+
+
+  /* BACKGROUND */
+
+  let background;
+
+  if (detections.length === 1) {
+
+    background =
+      "Subject clear ✅";
+
+  } else {
+
+    background =
+      "Multiple faces detected";
+
+  }
+
+
+  /* SHADOW */
+
+  let shadow;
+
+  if (confidence >= 85) {
+
+    shadow =
+      "Low / acceptable ✅";
+
+  } else {
+
+    shadow =
+      "Possible heavy shadow 🌑";
+
+  }
+
+
+  /* SHARPNESS */
+
+  let sharpness;
+
+  if (confidence >= 90) {
+
+    sharpness =
+      "Sharp & clear 🔬";
+
+  } else if (confidence >= 75) {
+
+    sharpness =
+      "Okay";
+
+  } else {
+
+    sharpness =
+      "May be blurry";
+
+  }
+
+
+  /* SCORE */
+
+  let quality =
+    Math.round(
+      confidence * 0.40 +
+      Math.min(
+        faceArea * 500,
+        100
+      ) * 0.20 +
+      positionScore * 100 * 0.25 +
+      Math.min(
+        detections.length === 1
+          ? 100
+          : 70,
+        100
+      ) * 0.15
+    );
+
+  quality =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        quality
+      )
+    );
+
+
+  /* READINESS */
+
+  let readiness;
+
+  if (quality >= 90) {
+
+    readiness =
+      "Ready to use 🚀";
+
+  } else if (quality >= 75) {
+
+    readiness =
+      "Almost ready 👍";
+
+  } else {
+
+    readiness =
+      "Retake recommended 📸";
+
+  }
+
+
+  /* AI COACH */
+
+  let suggestion;
+
+  if (quality >= 90) {
+
+    suggestion =
+      "Photo quality excellent! Keep the same framing and lighting. ✨";
+
+  } else {
+
+    const tips = [];
+
+    if (confidence < 80)
+      tips.push(
+        "better lighting"
+      );
+
+    if (faceArea < 0.08)
+      tips.push(
+        "camera ke thoda paas aao"
+      );
+
+    if (positionScore < 0.65)
+      tips.push(
+        "face ko center mein lao"
+      );
+
+    if (detections.length > 1)
+      tips.push(
+        "single-person photo try karo"
+      );
+
+    suggestion =
+      "Try: " +
+      tips.join(", ") +
+      ".";
+
+  }
+
+
+  /* DISPLAY */
+
+  document.getElementById(
+    "result"
+  ).style.display =
+    "block";
+
+  document.getElementById(
+    "quality"
+  ).innerText =
+    quality + "/100";
+
+  document.getElementById(
+    "faceCount"
+  ).innerText =
+    detections.length;
+
+  document.getElementById(
+    "confidence"
+  ).innerText =
+    confidence + "%";
+
+  document.getElementById(
+    "confidenceMeter"
+  ).style.width =
+    confidence + "%";
+
+  document.getElementById(
+    "lighting"
+  ).innerText =
+    lighting;
+
+  document.getElementById(
+    "lightingMeter"
+  ).style.width =
+    confidence + "%";
+
+  document.getElementById(
+    "faceSize"
+  ).innerText =
+    faceSize;
+
+  document.getElementById(
+    "facePosition"
+  ).innerText =
+    facePosition;
+
+  document.getElementById(
+    "visibility"
+  ).innerText =
+    visibility;
+
+  document.getElementById(
+    "composition"
+  ).innerText =
+    composition;
+
+  document.getElementById(
+    "background"
+  ).innerText =
+    background;
+
+  document.getElementById(
+    "shadow"
+  ).innerText =
+    shadow;
+
+  document.getElementById(
+    "sharpness"
+  ).innerText =
+    sharpness;
+
+  document.getElementById(
+    "readiness"
+  ).innerText =
+    readiness;
+
+  document.getElementById(
+    "suggestion"
+  ).innerText =
+    suggestion;
+
+  statusText.innerText =
+    "🎉 Analysis complete!";
+
+  saveHistory(
+    quality
+  );
 
 }
 
 
-const first=
-detections[0];
+/* =========================
+   PROFILE PICTURE CHECK
+========================= */
 
-const confidence=
-Math.round(
-first.score*100
-);
+function checkProfilePicture() {
 
-const box=
-first.box;
+  if (!detections.length) {
 
+    showPopup(
+      "🤦😂",
+      "Face Nahi Mila",
+      "Pehle clear photo upload karo."
+    );
 
-const imageWidth=
-currentImage.videoWidth ||
-currentImage.naturalWidth;
+    return;
 
-const imageHeight=
-currentImage.videoHeight ||
-currentImage.naturalHeight;
+  }
 
+  const box =
+    detections[0].box;
 
-const faceArea=
-(box.width*box.height) /
-(imageWidth*imageHeight);
+  const imageWidth =
+    currentImage.videoWidth ||
+    currentImage.naturalWidth;
 
+  const imageHeight =
+    currentImage.videoHeight ||
+    currentImage.naturalHeight;
 
-let faceSize;
+  const faceArea =
+    (box.width * box.height) /
+    (imageWidth * imageHeight);
 
+  const centerX =
+    box.x +
+    box.width / 2;
 
-if(faceArea>0.12){
+  const centerY =
+    box.y +
+    box.height / 2;
 
-faceSize=
-"Good 👍";
+  const centered =
+    Math.abs(
+      centerX -
+      imageWidth / 2
+    ) <
+    imageWidth * 0.18;
 
-}else{
+  const goodSize =
+    faceArea > 0.06;
 
-faceSize=
-"Face thoda door hai";
+  let result;
 
-}
+  if (
+    centered &&
+    goodSize
+  ) {
 
+    result =
+      "✅ This photo is suitable for a profile picture.";
 
-const centerX=
-box.x+
-box.width/2;
+  } else {
 
-const centerY=
-box.y+
-box.height/2;
+    result =
+      "📸 Try a closer and more centered photo.";
 
+  }
 
-const imageCenterX=
-imageWidth/2;
+  document.getElementById(
+    "profileBox"
+  ).style.display =
+    "block";
 
-const imageCenterY=
-imageHeight/2;
-
-
-const distance=
-Math.sqrt(
-Math.pow(
-centerX-imageCenterX,
-2
-)+
-Math.pow(
-centerY-imageCenterY,
-2
-)
-);
-
-
-const maxDistance=
-Math.sqrt(
-Math.pow(
-imageCenterX,
-2
-)+
-Math.pow(
-imageCenterY,
-2
-)
-);
-
-
-const positionScore=
-1-distance/maxDistance;
-
-
-let facePosition;
-
-
-if(positionScore>0.65){
-
-facePosition=
-"Centered ✅";
-
-}else{
-
-facePosition=
-"Move face toward center";
+  document.getElementById(
+    "profileResult"
+  ).innerText =
+    result;
 
 }
 
 
-let lighting;
+/* =========================
+   HISTORY
+========================= */
 
+function saveHistory(score) {
 
-if(confidence>=85){
+  let history =
+    JSON.parse(
+      localStorage.getItem(
+        "lovepreetScores"
+      ) || "[]"
+    );
 
-lighting=
-"Good 👍";
+  history.unshift({
+    score: score,
+    date: new Date().toLocaleString()
+  });
 
-}else if(confidence>=65){
+  history =
+    history.slice(
+      0,
+      10
+    );
 
-lighting=
-"Okay 🙂";
+  localStorage.setItem(
+    "lovepreetScores",
+    JSON.stringify(history)
+  );
 
-}else{
-
-lighting=
-"Improve lighting 💡";
-
-}
-
-
-let quality=
-Math.round(
-
-confidence*0.5+
-
-Math.min(
-faceArea*400,
-100
-)*0.2+
-
-Math.max(
-positionScore,
-0
-)*100*0.3
-
-);
-
-
-quality=
-Math.max(
-0,
-Math.min(
-100,
-quality
-)
-);
-
-
-let suggestion;
-
-
-if(quality>=85){
-
-suggestion=
-"Photo looks clear. Great! ✨";
-
-}else if(quality>=65){
-
-suggestion=
-"Thodi better lighting/position try karo.";
-
-}else{
-
-suggestion=
-"Face ko closer aur lighting ko better karo.";
+  displayHistory();
 
 }
 
 
-document.getElementById("result")
-.style.display="block";
+function displayHistory() {
 
+  const history =
+    JSON.parse(
+      localStorage.getItem(
+        "lovepreetScores"
+      ) || "[]"
+    );
 
-document.getElementById("quality")
-.innerText=
-quality+"/100";
+  const box =
+    document.getElementById(
+      "history"
+    );
 
+  const list =
+    document.getElementById(
+      "historyList"
+    );
 
-document.getElementById("faceCount")
-.innerText=
-detections.length;
+  if (!history.length) {
 
+    box.style.display =
+      "none";
 
-document.getElementById("confidence")
-.innerText=
-confidence+"%";
+    return;
 
+  }
 
-document.getElementById("lighting")
-.innerText=
-lighting;
+  box.style.display =
+    "block";
 
+  list.innerHTML =
+    history.map(
+      (item, index) => {
 
-document.getElementById("faceSize")
-.innerText=
-faceSize;
+        return `
+          <div class="history-item">
+            🏅 Scan ${index + 1}
+            — <b>${item.score}/100</b>
+            <br>
+            <span class="small">
+              ${item.date}
+            </span>
+          </div>
+        `;
 
-
-document.getElementById("facePosition")
-.innerText=
-facePosition;
-
-
-document.getElementById("imageStatus")
-.innerText=
-"Face clearly visible ✅";
-
-
-document.getElementById("suggestion")
-.innerText=
-suggestion;
-
-
-statusText.innerText=
-"🎉 Analysis complete!";
+      }
+    ).join("");
 
 }
 
-</script>
 
+function clearHistory() {
 
-<script>
+  localStorage.removeItem(
+    "lovepreetScores"
+  );
 
-if("serviceWorker" in navigator){
+  displayHistory();
 
-window.addEventListener(
-"load",
-()=>{
-navigator.serviceWorker.register("/sw.js");
 }
-);
+
+
+/* =========================
+   COPY REPORT
+========================= */
+
+function copyReport() {
+
+  const text =
+`Lovepreet AI Report
+
+Quality: ${
+    document.getElementById("quality").innerText
+  }
+
+Faces: ${
+    document.getElementById("faceCount").innerText
+  }
+
+Confidence: ${
+    document.getElementById("confidence").innerText
+  }
+
+Lighting: ${
+    document.getElementById("lighting").innerText
+  }
+
+Face Size: ${
+    document.getElementById("faceSize").innerText
+  }
+
+Position: ${
+    document.getElementById("facePosition").innerText
+  }
+
+Visibility: ${
+    document.getElementById("visibility").innerText
+  }
+
+Composition: ${
+    document.getElementById("composition").innerText
+  }
+
+Sharpness: ${
+    document.getElementById("sharpness").innerText
+  }
+
+Readiness: ${
+    document.getElementById("readiness").innerText
+  }
+
+AI Coach:
+${
+    document.getElementById("suggestion").innerText
+  }`;
+
+  navigator.clipboard.writeText(
+    text
+  ).then(() => {
+
+    showPopup(
+      "📋",
+      "Copied!",
+      "Report clipboard mein copy ho gayi."
+    );
+
+  });
+
+}
+
+
+/* =========================
+   SHARE
+========================= */
+
+function shareResult() {
+
+  const score =
+    document.getElementById(
+      "quality"
+    ).innerText;
+
+  const text =
+    "My Lovepreet AI Photo Quality Score: " +
+    score +
+    " 🚀";
+
+  if (
+    navigator.share
+  ) {
+
+    navigator.share({
+      title:
+        "Lovepreet AI Result",
+      text:
+        text
+    });
+
+  } else {
+
+    navigator.clipboard.writeText(
+      text
+    );
+
+    showPopup(
+      "📤",
+      "Ready!",
+      "Share text copy ho gaya."
+    );
+
+  }
+
+}
+
+
+/* =========================
+   POPUP
+========================= */
+
+function showPopup(
+  emoji,
+  title,
+  text
+) {
+
+  document.getElementById(
+    "popupEmoji"
+  ).innerText =
+    emoji;
+
+  document.getElementById(
+    "popupTitle"
+  ).innerText =
+    title;
+
+  document.getElementById(
+    "popupText"
+  ).innerText =
+    text;
+
+  document.getElementById(
+    "popup"
+  ).style.display =
+    "flex";
+
+}
+
+
+function closePopup() {
+
+  document.getElementById(
+    "popup"
+  ).style.display =
+    "none";
+
+}
+
+
+/* =========================
+   START HISTORY
+========================= */
+
+displayHistory();
+
+
+/* =========================
+   SERVICE WORKER
+========================= */
+
+if (
+  "serviceWorker" in navigator
+) {
+
+  window.addEventListener(
+    "load",
+    () => {
+
+      navigator.serviceWorker.register(
+        "/sw.js"
+      );
+
+    }
+  );
 
 }
 
