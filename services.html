@@ -59,11 +59,17 @@
       border-radius: 14px;
       font-size: 16px;
       font-weight: bold;
+      cursor: pointer;
     }
 
     .primary {
       background: white;
       color: #0f172a;
+    }
+
+    .location-btn {
+      background: #2563eb;
+      color: white;
     }
 
     .result {
@@ -80,6 +86,16 @@
 
     .card h3 {
       margin-top: 0;
+    }
+
+    .success {
+      color: #16a34a;
+      font-weight: bold;
+    }
+
+    .error {
+      color: #dc2626;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -108,21 +124,48 @@
         Service choose karo
       </option>
 
-      <option>🔧 Plumber</option>
-      <option>⚡ Electrician</option>
-      <option>📱 Mobile Repair</option>
-      <option>🛵 Bike Repair</option>
-      <option>❄️ AC Repair</option>
-      <option>💇 Barber</option>
-      <option>🧹 Cleaning</option>
+      <option value="Plumber">
+        🔧 Plumber
+      </option>
+
+      <option value="Electrician">
+        ⚡ Electrician
+      </option>
+
+      <option value="Mobile Repair">
+        📱 Mobile Repair
+      </option>
+
+      <option value="Bike Repair">
+        🛵 Bike Repair
+      </option>
+
+      <option value="AC Repair">
+        ❄️ AC Repair
+      </option>
+
+      <option value="Barber">
+        💇 Barber
+      </option>
+
+      <option value="Cleaning">
+        🧹 Cleaning
+      </option>
 
     </select>
+
+    <button
+      class="location-btn"
+      onclick="useMyLocation()"
+    >
+      📍 Use My Location
+    </button>
 
     <button
       class="primary"
       onclick="searchService()"
     >
-      🔎 Search
+      🔎 Search Service
     </button>
 
   </div>
@@ -134,32 +177,161 @@
 
 </div>
 
+
 <script>
 
-function searchService() {
+let userLatitude = null;
+let userLongitude = null;
 
-  const area =
-    document.getElementById("area").value.trim();
 
-  const service =
-    document.getElementById("service").value;
+/* USE MY LOCATION */
+
+function useMyLocation() {
 
   const result =
     document.getElementById("result");
 
-  if (!area) {
+  if (!navigator.geolocation) {
 
-    alert("Bhai pehle area likho 😄");
+    result.innerHTML = `
+      <div class="card">
+        <p class="error">
+          ❌ Is phone/browser mein location
+          support nahi karti.
+        </p>
+      </div>
+    `;
+
     return;
-
   }
+
+  result.innerHTML = `
+    <div class="card">
+      <h3>📍 Location find ho rahi hai...</h3>
+      <p>Please location permission allow karo.</p>
+    </div>
+  `;
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      userLatitude =
+        position.coords.latitude;
+
+      userLongitude =
+        position.coords.longitude;
+
+      result.innerHTML = `
+        <div class="card">
+
+          <h3>✅ Location mil gayi!</h3>
+
+          <p class="success">
+            Ab apni service select karke
+            Search Service dabao.
+          </p>
+
+        </div>
+      `;
+
+    },
+
+    function(error) {
+
+      result.innerHTML = `
+        <div class="card">
+
+          <h3>❌ Location nahi mili</h3>
+
+          <p>
+            Location permission allow karo
+            ya manually apna area likho.
+          </p>
+
+        </div>
+      `;
+
+    }
+
+  );
+
+}
+
+
+/* SEARCH SERVICE */
+
+function searchService() {
+
+  const area =
+    document.getElementById("area")
+      .value
+      .trim();
+
+  const service =
+    document.getElementById("service")
+      .value;
+
+  const result =
+    document.getElementById("result");
+
 
   if (!service) {
 
-    alert("Bhai service select karo 😄");
-    return;
+    alert(
+      "Bhai pehle service choose karo 😄"
+    );
 
+    return;
   }
+
+
+  if (!area && userLatitude === null) {
+
+    alert(
+      "Area likho ya Use My Location dabao 📍"
+    );
+
+    return;
+  }
+
+
+  if (userLatitude !== null) {
+
+    result.innerHTML = `
+
+      <div class="card">
+
+        <h3>🔎 Searching Nearby...</h3>
+
+        <p>
+          🛠️ Service:
+          <b>${service}</b>
+        </p>
+
+        <p>
+          📍 GPS Location:
+          <b>Detected ✅</b>
+        </p>
+
+        <p>
+          🤖 Lovepreet AI:
+          Nearby ${service} providers
+          search karne ke liye ready hai.
+        </p>
+
+        <p>
+          🚀 Real business data connection
+          next step mein add hoga.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+  }
+
 
   result.innerHTML = `
 
@@ -168,7 +340,33 @@ function searchService() {
       <h3>🔎 Searching...</h3>
 
       <p>
-        📍 Area: <b>${area}</b>
+        📍 Area:
+        <b>${area}</b>
       </p>
 
-     
+      <p>
+        🛠️ Service:
+        <b>${service}</b>
+      </p>
+
+      <p>
+        🤖 Lovepreet AI nearby
+        ${service} providers search
+        karne ke liye ready hai.
+      </p>
+
+      <p>
+        🚀 Real business results
+        next step mein connect honge.
+      </p>
+
+    </div>
+
+  `;
+
+}
+
+</script>
+
+</body>
+</html>
