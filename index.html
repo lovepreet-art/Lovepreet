@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lovepreet</title>
+</head>
 
+<body>
+  <h1>❤️ Lovepreet</h1>
+  <p>Face Detection App</p>
+
+  <button onclick="startCamera()">📷 Start Camera</button>
+
+  <br><br>
+
+  <video id="camera" autoplay playsinline width="320"></video>
+
+  <script>
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true
+        });
+
+        document.getElementById("camera").srcObject = stream;
+      } catch (error) {
+        alert("Camera permission nahi mili.");
+      }
+    }
+  </script>
+</body>
+</html>
