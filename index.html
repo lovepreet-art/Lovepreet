@@ -2,80 +2,127 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lovepreet AI Face Analyzer</title>
+  <title>Lovepreet AI</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      padding: 20px;
-      text-align: center;
+      min-height: 100vh;
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: linear-gradient(135deg, #111827, #312e81);
+      color: white;
+      text-align: center;
+      padding: 25px 15px;
     }
 
     h1 {
-      margin-bottom: 5px;
+      margin: 10px 0 5px;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      color: #d1d5db;
+      margin-bottom: 20px;
+    }
+
+    .camera-box {
+      max-width: 430px;
+      margin: auto;
+      position: relative;
     }
 
     video {
       width: 100%;
-      max-width: 420px;
-      border-radius: 20px;
-      margin-top: 20px;
+      border-radius: 22px;
       background: black;
+      display: block;
+      transform: scaleX(-1);
     }
 
     button {
+      width: 100%;
+      max-width: 430px;
+      margin-top: 18px;
+      padding: 16px;
       border: 0;
-      border-radius: 12px;
-      padding: 14px 22px;
-      font-size: 17px;
-      margin-top: 15px;
+      border-radius: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
     }
 
     #status {
-      margin-top: 15px;
-      font-weight: bold;
+      margin: 18px 0;
+      color: #e5e7eb;
     }
 
     #result {
-      margin: 20px auto;
-      padding: 20px;
-      max-width: 380px;
-      background: white;
-      border-radius: 18px;
       display: none;
+      max-width: 430px;
+      margin: 20px auto;
+      padding: 22px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.12);
+    }
+
+    .value {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 8px;
+    }
+
+    .privacy {
+      max-width: 430px;
+      margin: 25px auto 0;
+      font-size: 12px;
+      color: #cbd5e1;
     }
   </style>
 </head>
 
 <body>
 
-<h1>❤️ Lovepreet AI</h1>
-<p>Face Detection & Age Estimation</p>
+  <h1>❤️ Lovepreet AI</h1>
+  <div class="subtitle">AI Face Analyzer</div>
 
-<button onclick="startCamera()">📷 Start Camera</button>
+  <div class="camera-box">
+    <video id="camera" autoplay muted playsinline></video>
+  </div>
 
-<br>
+  <button onclick="startCamera()">📷 Start Camera</button>
 
-<video id="camera" autoplay muted playsinline></video>
+  <p id="status">Camera start karo.</p>
 
-<p id="status">Start Camera dabao.</p>
+  <div id="result">
+    <h2>🔎 Analysis Result</h2>
 
-<div id="result">
-  <h2>🔎 Analysis</h2>
-  <p id="face">Face: --</p>
-  <p id="age">Estimated Age: --</p>
-</div>
+    <p>🙂 Face</p>
+    <div class="value" id="face">--</div>
+
+    <p>🎂 Estimated Age</p>
+    <div class="value" id="age">--</div>
+  </div>
+
+  <div class="privacy">
+    🔒 Camera analysis is performed for this app experience.
+  </div>
 
 <script>
+
 const video = document.getElementById("camera");
 const statusText = document.getElementById("status");
 
+let analyzing = false;
+
 async function loadAI() {
-  statusText.innerText = "AI model load ho raha hai...";
+
+  statusText.innerText = "🤖 AI model loading...";
 
   await faceapi.nets.tinyFaceDetector.loadFromUri(
     "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
@@ -85,11 +132,17 @@ async function loadAI() {
     "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
   );
 
-  statusText.innerText = "AI ready ✅";
+  statusText.innerText = "✅ AI ready";
 }
 
 async function startCamera() {
+
+  if (analyzing) return;
+
   try {
+
+    statusText.innerText = "📷 Starting camera...";
+
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true
     });
@@ -98,49 +151,58 @@ async function startCamera() {
 
     await loadAI();
 
-    statusText.innerText = "Face camera ke saamne lao 🙂";
+    analyzing = true;
+
+    statusText.innerText = "🙂 Face camera ki taraf karo";
 
     video.onplaying = () => {
       analyzeFace();
     };
 
   } catch (error) {
+
     console.error(error);
-    statusText.innerText = "Camera ya AI model start nahi hua.";
+
+    statusText.innerText =
+      "❌ Camera start nahi hua.";
   }
 }
 
 async function analyzeFace() {
 
-  const result = await faceapi
+  const detection = await faceapi
     .detectSingleFace(
       video,
       new faceapi.TinyFaceDetectorOptions()
     )
     .withAgeAndGender();
 
-  if (result) {
+  if (detection) {
 
-    const estimatedAge = Math.round(result.age);
+    const age = Math.round(detection.age);
 
     document.getElementById("result").style.display = "block";
 
     document.getElementById("face").innerText =
-      "Face detected ✅";
+      "Detected ✅";
 
     document.getElementById("age").innerText =
-      "Estimated Age: " + estimatedAge + " years";
+      age + " years";
 
-    statusText.innerText = "Analysis complete ✅";
+    statusText.innerText =
+      "🎉 Analysis complete";
 
   } else {
 
     statusText.innerText =
-      "Face detect nahi hua — camera ki taraf dekho 🙂";
+      "🙂 Face detect nahi hua — camera ki taraf dekho";
   }
 
-  setTimeout(analyzeFace, 1000);
+  if (analyzing) {
+    setTimeout(analyzeFace, 1000);
+  }
 }
+
 </script>
 
 </body>
