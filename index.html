@@ -83,11 +83,11 @@
       color: white;
     }
 
-    #photo {
+    #fileInput {
       display: none;
     }
 
-    #fileInput {
+    #photo {
       display: none;
     }
 
@@ -98,10 +98,6 @@
       border-radius: 22px;
       background: white;
       color: #0f172a;
-    }
-
-    .result h2 {
-      margin-top: 0;
     }
 
     .score {
@@ -115,6 +111,14 @@
       margin: 8px 0;
       border-radius: 12px;
       background: #f1f5f9;
+    }
+
+    .good {
+      color: green;
+    }
+
+    .warn {
+      color: #d97706;
     }
 
     #status {
@@ -133,9 +137,13 @@
   <div class="subtitle">Smart Face & Photo Analyzer</div>
 
   <div class="camera-box">
+
     <video id="camera" autoplay muted playsinline></video>
+
     <canvas id="overlay"></canvas>
+
     <img id="photo">
+
   </div>
 
   <button class="primary" onclick="startCamera()">
@@ -146,7 +154,8 @@
     📸 Take Photo
   </button>
 
-  <button class="secondary" onclick="document.getElementById('fileInput').click()">
+  <button class="secondary"
+    onclick="document.getElementById('fileInput').click()">
     🖼️ Upload Photo
   </button>
 
@@ -172,11 +181,14 @@
     <h2>✨ Analysis Result</h2>
 
     <div>Overall Quality</div>
-    <div class="score" id="quality">--</div>
+
+    <div class="score" id="quality">
+      --
+    </div>
 
     <div class="item">
-      👤 Face Detection:
-      <b id="faceStatus">--</b>
+      👥 Faces Found:
+      <b id="faceCount">--</b>
     </div>
 
     <div class="item">
@@ -186,12 +198,27 @@
 
     <div class="item">
       💡 Lighting:
-      <b id="lighting">Checking...</b>
+      <b id="lighting">--</b>
+    </div>
+
+    <div class="item">
+      🔍 Face Size:
+      <b id="faceSize">--</b>
+    </div>
+
+    <div class="item">
+      📍 Face Position:
+      <b id="facePosition">--</b>
     </div>
 
     <div class="item">
       📸 Image Status:
-      <b id="imageStatus">Checking...</b>
+      <b id="imageStatus">--</b>
+    </div>
+
+    <div class="item">
+      💡 Suggestion:
+      <b id="suggestion">--</b>
     </div>
 
   </div>
@@ -205,14 +232,20 @@ const canvas = document.getElementById("overlay");
 const photo = document.getElementById("photo");
 const statusText = document.getElementById("status");
 
-let latestDetection = null;
+let detections = [];
 let running = false;
 let currentImage = null;
+let aiLoaded = false;
 
 async function loadAI() {
+
+  if (aiLoaded) return;
+
   await faceapi.nets.tinyFaceDetector.loadFromUri(
     "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
   );
+
+  aiLoaded = true;
 }
 
 async function startCamera() {
@@ -223,11 +256,13 @@ async function startCamera() {
 
     await loadAI();
 
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true
-    });
+    const stream =
+      await navigator.mediaDevices.getUserMedia({
+        video: true
+      });
 
     video.srcObject = stream;
+
     video.style.display = "block";
     photo.style.display = "none";
 
@@ -242,7 +277,7 @@ async function startCamera() {
       statusText.innerText =
         "🙂 Face camera ke saamne lao";
 
-      detectFace();
+      detectFaces();
     };
 
   } catch (error) {
@@ -254,42 +289,24 @@ async function startCamera() {
   }
 }
 
-async function detectFace() {
+async function detectFaces() {
 
   if (!running) return;
 
   try {
 
-    latestDetection = await faceapi.detectSingleFace(
-      video,
-      new faceapi.TinyFaceDetectorOptions()
-    );
-
-    const ctx = canvas.getContext("2d");
-
-    ctx.clearRect(
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
-
-    if (latestDetection) {
-
-      const box = latestDetection.box;
-
-      ctx.strokeStyle = "#00ff00";
-      ctx.lineWidth = 5;
-
-      ctx.strokeRect(
-        box.x,
-        box.y,
-        box.width,
-        box.height
+    detections =
+      await faceapi.detectAllFaces(
+        video,
+        new faceapi.TinyFaceDetectorOptions()
       );
 
+    drawBoxes();
+
+    if (detections.length > 0) {
+
       statusText.innerText =
-        "✅ Face detected";
+        "✅ " + detections.length + " face detected";
 
     } else {
 
@@ -302,7 +319,35 @@ async function detectFace() {
     console.error(error);
   }
 
-  setTimeout(detectFace, 500);
+  setTimeout(detectFaces, 500);
+}
+
+function drawBoxes() {
+
+  const ctx = canvas.getContext("2d");
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  detections.forEach(d => {
+
+    const box = d.box;
+
+    ctx.strokeStyle = "#00ff00";
+    ctx.lineWidth = 5;
+
+    ctx.strokeRect(
+      box.x,
+      box.y,
+      box.width,
+      box.height
+    );
+
+  });
 }
 
 function takePhoto() {
@@ -313,12 +358,14 @@ function takePhoto() {
     return;
   }
 
-  const tempCanvas = document.createElement("canvas");
+  const tempCanvas =
+    document.createElement("canvas");
 
   tempCanvas.width = video.videoWidth;
   tempCanvas.height = video.videoHeight;
 
-  const ctx = tempCanvas.getContext("2d");
+  const ctx =
+    tempCanvas.getContext("2d");
 
   ctx.drawImage(
     video,
@@ -328,7 +375,8 @@ function takePhoto() {
     tempCanvas.height
   );
 
-  photo.src = tempCanvas.toDataURL("image/jpeg");
+  photo.src =
+    tempCanvas.toDataURL("image/jpeg");
 
   photo.style.display = "block";
   video.style.display = "none";
@@ -337,16 +385,18 @@ function takePhoto() {
   running = false;
 
   statusText.innerText =
-    "📸 Photo captured. Ab Analyze Now dabao.";
+    "📸 Photo captured. Analyze Now dabao.";
 }
 
 function uploadPhoto(event) {
 
-  const file = event.target.files[0];
+  const file =
+    event.target.files[0];
 
   if (!file) return;
 
-  const reader = new FileReader();
+  const reader =
+    new FileReader();
 
   reader.onload = async function(e) {
 
@@ -361,14 +411,14 @@ function uploadPhoto(event) {
       running = false;
 
       statusText.innerText =
-        "🖼️ Photo loaded. Ab Analyze Now dabao.";
+        "🖼️ Photo loaded. Analyze Now dabao.";
 
       try {
 
         await loadAI();
 
-        latestDetection =
-          await faceapi.detectSingleFace(
+        detections =
+          await faceapi.detectAllFaces(
             photo,
             new faceapi.TinyFaceDetectorOptions()
           );
@@ -377,7 +427,7 @@ function uploadPhoto(event) {
 
         console.error(error);
 
-        latestDetection = null;
+        detections = [];
       }
     };
   };
@@ -387,41 +437,162 @@ function uploadPhoto(event) {
 
 function analyzeNow() {
 
-  if (!latestDetection) {
+  if (!detections.length) {
 
     alert(
-      "Face detect nahi hua. Face clear aur camera ke saamne rakho."
+      "Face detect nahi hua. Clear photo try karo."
     );
 
     return;
   }
 
+  const first =
+    detections[0];
+
   const confidence =
-    Math.round(latestDetection.score * 100);
+    Math.round(first.score * 100);
 
-  let quality = confidence;
+  const box =
+    first.box;
 
-  if (quality > 95) quality = 95;
+  const imageWidth =
+    currentImage.videoWidth ||
+    currentImage.naturalWidth;
 
-  if (quality < 50) quality = 50;
+  const imageHeight =
+    currentImage.videoHeight ||
+    currentImage.naturalHeight;
 
-  document.getElementById("result").style.display =
-    "block";
+  const faceArea =
+    (box.width * box.height) /
+    (imageWidth * imageHeight);
 
-  document.getElementById("quality").innerText =
+  let faceSize;
+
+  if (faceArea > 0.12) {
+
+    faceSize = "Good 👍";
+
+  } else {
+
+    faceSize = "Face thoda door hai";
+  }
+
+  const centerX =
+    box.x + box.width / 2;
+
+  const centerY =
+    box.y + box.height / 2;
+
+  const imageCenterX =
+    imageWidth / 2;
+
+  const imageCenterY =
+    imageHeight / 2;
+
+  const distance =
+    Math.sqrt(
+      Math.pow(centerX - imageCenterX, 2) +
+      Math.pow(centerY - imageCenterY, 2)
+    );
+
+  const maxDistance =
+    Math.sqrt(
+      Math.pow(imageCenterX, 2) +
+      Math.pow(imageCenterY, 2)
+    );
+
+  const positionScore =
+    1 - distance / maxDistance;
+
+  let facePosition;
+
+  if (positionScore > 0.65) {
+
+    facePosition = "Centered ✅";
+
+  } else {
+
+    facePosition = "Move face toward center";
+  }
+
+  let lighting;
+
+  if (confidence >= 85) {
+
+    lighting = "Good 👍";
+
+  } else if (confidence >= 65) {
+
+    lighting = "Okay 🙂";
+
+  } else {
+
+    lighting = "Improve lighting 💡";
+  }
+
+  let quality =
+    Math.round(
+      confidence * 0.5 +
+      Math.min(faceArea * 400, 100) * 0.2 +
+      Math.max(positionScore, 0) * 100 * 0.3
+    );
+
+  quality =
+    Math.max(0, Math.min(100, quality));
+
+  let suggestion;
+
+  if (quality >= 85) {
+
+    suggestion =
+      "Photo looks clear. Great! ✨";
+
+  } else if (quality >= 65) {
+
+    suggestion =
+      "Thodi better lighting/position try karo.";
+
+  } else {
+
+    suggestion =
+      "Face ko closer aur lighting ko better karo.";
+  }
+
+  document.getElementById("result")
+    .style.display = "block";
+
+  document.getElementById("quality")
+    .innerText =
     quality + "/100";
 
-  document.getElementById("faceStatus").innerText =
-    "Detected ✅";
+  document.getElementById("faceCount")
+    .innerText =
+    detections.length;
 
-  document.getElementById("confidence").innerText =
+  document.getElementById("confidence")
+    .innerText =
     confidence + "%";
 
-  document.getElementById("lighting").innerText =
-    "Good 👍";
+  document.getElementById("lighting")
+    .innerText =
+    lighting;
 
-  document.getElementById("imageStatus").innerText =
+  document.getElementById("faceSize")
+    .innerText =
+    faceSize;
+
+  document.getElementById("facePosition")
+    .innerText =
+    facePosition;
+
+  document.getElementById("imageStatus")
+    .innerText =
     "Face clearly visible ✅";
+
+  document.getElementById("suggestion")
+    .innerText =
+    suggestion;
 
   statusText.innerText =
     "🎉 Analysis complete!";
