@@ -1,611 +1,957 @@
 <!DOCTYPE html>
 <html>
-<head><link rel="manifest" href="/manifest.json">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lovepreet AI</title>
+<head>
 
-  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+<link rel="manifest" href="/manifest.json">
 
-  <style>
-    * { box-sizing: border-box; }
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    body {
-      margin: 0;
-      padding: 24px 14px;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-    }
+<title>Lovepreet AI</title>
 
-    .app {
-      max-width: 500px;
-      margin: auto;
-    }
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 
-    h1 {
-      text-align: center;
-      margin: 8px 0;
-      font-size: 32px;
-    }
+<style>
 
-    .subtitle {
-      text-align: center;
-      color: #cbd5e1;
-      margin-bottom: 22px;
-    }
+*{
+  box-sizing:border-box;
+}
 
-    .camera-box {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-      border-radius: 24px;
-      background: #000;
-      box-shadow: 0 15px 40px rgba(0,0,0,.35);
-    }
+body{
+  margin:0;
+  padding:24px 14px;
+  font-family:Arial,sans-serif;
+  background:#0f172a;
+  color:white;
+}
 
-    video,
-    #photo {
-      width: 100%;
-      display: block;
-      border-radius: 24px;
-    }
+.app{
+  max-width:500px;
+  margin:auto;
+}
 
-    video {
-      transform: scaleX(-1);
-    }
+h1{
+  text-align:center;
+  margin:8px 0;
+  font-size:32px;
+}
 
-    canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      transform: scaleX(-1);
-    }
+.subtitle{
+  text-align:center;
+  color:#cbd5e1;
+  margin-bottom:22px;
+}
 
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 15px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.camera-box{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  border-radius:24px;
+  background:#000;
+  box-shadow:0 15px 40px rgba(0,0,0,.35);
+}
 
-    .primary {
-      background: white;
-      color: #0f172a;
-    }
+video,
+#photo{
+  width:100%;
+  display:block;
+  border-radius:24px;
+}
 
-    .secondary {
-      background: #1e293b;
-      color: white;
-    }
+video{
+  transform:scaleX(-1);
+}
 
-    #fileInput {
-      display: none;
-    }
+canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  transform:scaleX(-1);
+}
 
-    #photo {
-      display: none;
-    }
+button{
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border:none;
+  border-radius:15px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    .result {
-      display: none;
-      margin-top: 20px;
-      padding: 20px;
-      border-radius: 22px;
-      background: white;
-      color: #0f172a;
-    }
+.primary{
+  background:white;
+  color:#0f172a;
+}
 
-    .score {
-      font-size: 42px;
-      font-weight: bold;
-      margin: 8px 0 18px;
-    }
+.secondary{
+  background:#1e293b;
+  color:white;
+}
 
-    .item {
-      padding: 13px;
-      margin: 8px 0;
-      border-radius: 12px;
-      background: #f1f5f9;
-    }
+#fileInput{
+  display:none;
+}
 
-    .good {
-      color: green;
-    }
+#photo{
+  display:none;
+}
 
-    .warn {
-      color: #d97706;
-    }
+.result{
+  display:none;
+  margin-top:20px;
+  padding:20px;
+  border-radius:22px;
+  background:white;
+  color:#0f172a;
+}
 
-    #status {
-      text-align: center;
-      color: #cbd5e1;
-      margin: 15px 0;
-    }
-  </style>
+.score{
+  font-size:42px;
+  font-weight:bold;
+  margin:8px 0 18px;
+}
+
+.item{
+  padding:13px;
+  margin:8px 0;
+  border-radius:12px;
+  background:#f1f5f9;
+}
+
+#status{
+  text-align:center;
+  color:#cbd5e1;
+  margin:15px 0;
+}
+
+
+/* FUNNY POPUP */
+
+#funnyPopup{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.7);
+  z-index:9999;
+  padding:20px;
+}
+
+.popupBox{
+  width:100%;
+  max-width:330px;
+  background:white;
+  color:#0f172a;
+  border-radius:25px;
+  padding:25px;
+  text-align:center;
+  animation:pop .25s ease;
+}
+
+.popupEmoji{
+  font-size:70px;
+}
+
+.popupBox h2{
+  margin:10px 0;
+}
+
+.popupBox p{
+  color:#64748b;
+}
+
+.popupClose{
+  background:#0f172a;
+  color:white;
+  margin-top:15px;
+}
+
+@keyframes pop{
+
+  from{
+    transform:scale(.7);
+    opacity:0;
+  }
+
+  to{
+    transform:scale(1);
+    opacity:1;
+  }
+
+}
+
+</style>
 </head>
+
 
 <body>
 
 <div class="app">
 
-  <h1>❤️ Lovepreet AI</h1>
-  <div class="subtitle">Smart Face & Photo Analyzer</div>
+<h1>❤️ Lovepreet AI</h1>
 
-  <div class="camera-box">
+<div class="subtitle">
+Smart Face & Photo Analyzer
+</div>
 
-    <video id="camera" autoplay muted playsinline></video>
 
-    <canvas id="overlay"></canvas>
+<div class="camera-box">
 
-    <img id="photo">
+<video
+id="camera"
+autoplay
+muted
+playsinline>
+</video>
 
-  </div>
+<canvas id="overlay"></canvas>
 
-  <button class="primary" onclick="startCamera()">
-    📷 Start Camera
-  </button>
-
-  <button class="secondary" onclick="takePhoto()">
-    📸 Take Photo
-  </button>
-
-  <button class="secondary"
-    onclick="document.getElementById('fileInput').click()">
-    🖼️ Upload Photo
-  </button>
-
-  <input
-    id="fileInput"
-    type="file"
-    accept="image/*"
-    onchange="uploadPhoto(event)"
-  >
-
-  <button class="primary" onclick="analyzeNow()">
-    🔎 Analyze Now
-  </button>
-
-  <button class="secondary" onclick="location.reload()">
-    🔄 Scan Again
-  </button>
-
-  <p id="status">Start Camera dabao.</p>
-
-  <div class="result" id="result">
-
-    <h2>✨ Analysis Result</h2>
-
-    <div>Overall Quality</div>
-
-    <div class="score" id="quality">
-      --
-    </div>
-
-    <div class="item">
-      👥 Faces Found:
-      <b id="faceCount">--</b>
-    </div>
-
-    <div class="item">
-      🎯 Detection Confidence:
-      <b id="confidence">--</b>
-    </div>
-
-    <div class="item">
-      💡 Lighting:
-      <b id="lighting">--</b>
-    </div>
-
-    <div class="item">
-      🔍 Face Size:
-      <b id="faceSize">--</b>
-    </div>
-
-    <div class="item">
-      📍 Face Position:
-      <b id="facePosition">--</b>
-    </div>
-
-    <div class="item">
-      📸 Image Status:
-      <b id="imageStatus">--</b>
-    </div>
-
-    <div class="item">
-      💡 Suggestion:
-      <b id="suggestion">--</b>
-    </div>
-
-  </div>
+<img id="photo">
 
 </div>
 
+
+<button
+class="primary"
+onclick="startCamera()">
+📷 Start Camera
+</button>
+
+
+<button
+class="secondary"
+onclick="takePhoto()">
+📸 Take Photo
+</button>
+
+
+<button
+class="secondary"
+onclick="document.getElementById('fileInput').click()">
+🖼️ Upload Photo
+</button>
+
+
+<input
+id="fileInput"
+type="file"
+accept="image/*"
+onchange="uploadPhoto(event)"
+>
+
+
+<button
+class="primary"
+onclick="analyzeNow()">
+🔎 Analyze Now
+</button>
+
+
+<button
+class="secondary"
+onclick="location.reload()">
+🔄 Scan Again
+</button>
+
+
+<p id="status">
+Start Camera dabao.
+</p>
+
+
+<div
+class="result"
+id="result">
+
+<h2>✨ Analysis Result</h2>
+
+<div>Overall Quality</div>
+
+<div
+class="score"
+id="quality">
+--
+</div>
+
+
+<div class="item">
+👥 Faces Found:
+<b id="faceCount">--</b>
+</div>
+
+
+<div class="item">
+🎯 Detection Confidence:
+<b id="confidence">--</b>
+</div>
+
+
+<div class="item">
+💡 Lighting:
+<b id="lighting">--</b>
+</div>
+
+
+<div class="item">
+🔍 Face Size:
+<b id="faceSize">--</b>
+</div>
+
+
+<div class="item">
+📍 Face Position:
+<b id="facePosition">--</b>
+</div>
+
+
+<div class="item">
+📸 Image Status:
+<b id="imageStatus">--</b>
+</div>
+
+
+<div class="item">
+💡 Suggestion:
+<b id="suggestion">--</b>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- FUNNY POPUP -->
+
+<div id="funnyPopup">
+
+<div class="popupBox">
+
+<div
+class="popupEmoji"
+id="popupEmoji">
+🤦😂
+</div>
+
+<h2 id="popupTitle">
+Oye! Sahi photo daal 😄
+</h2>
+
+<p id="popupText">
+Lovepreet AI ko face nahi mila.
+</p>
+
+<button
+class="popupClose"
+onclick="closeFunnyPopup()">
+😂 Okay
+</button>
+
+</div>
+
+</div>
+
+
 <script>
 
-const video = document.getElementById("camera");
-const canvas = document.getElementById("overlay");
-const photo = document.getElementById("photo");
-const statusText = document.getElementById("status");
+const video =
+document.getElementById("camera");
+
+const canvas =
+document.getElementById("overlay");
+
+const photo =
+document.getElementById("photo");
+
+const statusText =
+document.getElementById("status");
 
 let detections = [];
+
 let running = false;
+
 let currentImage = null;
+
 let aiLoaded = false;
 
-async function loadAI() {
 
-  if (aiLoaded) return;
+/* FUNNY POPUP */
 
-  await faceapi.nets.tinyFaceDetector.loadFromUri(
-    "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
-  );
+function showFunnyPopup(
+emoji="🤦😂",
+title="Oye! Sahi photo daal 😄",
+text="Lovepreet AI ko face nahi mila."
+){
 
-  aiLoaded = true;
+document.getElementById("popupEmoji")
+.innerText=emoji;
+
+document.getElementById("popupTitle")
+.innerText=title;
+
+document.getElementById("popupText")
+.innerText=text;
+
+document.getElementById("funnyPopup")
+.style.display="flex";
+
 }
 
-async function startCamera() {
 
-  try {
+function closeFunnyPopup(){
 
-    statusText.innerText = "🤖 AI loading...";
+document.getElementById("funnyPopup")
+.style.display="none";
 
-    await loadAI();
-
-    const stream =
-      await navigator.mediaDevices.getUserMedia({
-        video: true
-      });
-
-    video.srcObject = stream;
-
-    video.style.display = "block";
-    photo.style.display = "none";
-
-    video.onloadedmetadata = () => {
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      running = true;
-      currentImage = video;
-
-      statusText.innerText =
-        "🙂 Face camera ke saamne lao";
-
-      detectFaces();
-    };
-
-  } catch (error) {
-
-    console.error(error);
-
-    statusText.innerText =
-      "❌ Camera ya AI start nahi hua.";
-  }
 }
 
-async function detectFaces() {
 
-  if (!running) return;
+/* LOAD AI */
 
-  try {
+async function loadAI(){
 
-    detections =
-      await faceapi.detectAllFaces(
-        video,
-        new faceapi.TinyFaceDetectorOptions()
-      );
+if(aiLoaded) return;
 
-    drawBoxes();
+await faceapi.nets.tinyFaceDetector.loadFromUri(
+"https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
+);
 
-    if (detections.length > 0) {
+aiLoaded=true;
 
-      statusText.innerText =
-        "✅ " + detections.length + " face detected";
-
-    } else {
-
-      statusText.innerText =
-        "🙂 Face camera ke saamne lao";
-    }
-
-  } catch (error) {
-
-    console.error(error);
-  }
-
-  setTimeout(detectFaces, 500);
 }
 
-function drawBoxes() {
 
-  const ctx = canvas.getContext("2d");
+/* CAMERA */
 
-  ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
+async function startCamera(){
 
-  detections.forEach(d => {
+try{
 
-    const box = d.box;
+statusText.innerText=
+"🤖 AI loading...";
 
-    ctx.strokeStyle = "#00ff00";
-    ctx.lineWidth = 5;
+await loadAI();
 
-    ctx.strokeRect(
-      box.x,
-      box.y,
-      box.width,
-      box.height
-    );
+const stream=
+await navigator.mediaDevices.getUserMedia({
+video:true
+});
 
-  });
+video.srcObject=stream;
+
+video.style.display="block";
+
+photo.style.display="none";
+
+video.onloadedmetadata=()=>{
+
+canvas.width=
+video.videoWidth;
+
+canvas.height=
+video.videoHeight;
+
+running=true;
+
+currentImage=video;
+
+statusText.innerText=
+"🙂 Face camera ke saamne lao";
+
+detectFaces();
+
+};
+
+}catch(error){
+
+console.error(error);
+
+statusText.innerText=
+"❌ Camera ya AI start nahi hua.";
+
+showFunnyPopup(
+"😅",
+"Oops!",
+"Camera start nahi hua. Permission check karo."
+);
+
 }
 
-function takePhoto() {
-
-  if (!video.srcObject) {
-
-    alert("Pehle Start Camera dabao.");
-    return;
-  }
-
-  const tempCanvas =
-    document.createElement("canvas");
-
-  tempCanvas.width = video.videoWidth;
-  tempCanvas.height = video.videoHeight;
-
-  const ctx =
-    tempCanvas.getContext("2d");
-
-  ctx.drawImage(
-    video,
-    0,
-    0,
-    tempCanvas.width,
-    tempCanvas.height
-  );
-
-  photo.src =
-    tempCanvas.toDataURL("image/jpeg");
-
-  photo.style.display = "block";
-  video.style.display = "none";
-
-  currentImage = photo;
-  running = false;
-
-  statusText.innerText =
-    "📸 Photo captured. Analyze Now dabao.";
 }
 
-function uploadPhoto(event) {
 
-  const file =
-    event.target.files[0];
+/* FACE DETECTION */
 
-  if (!file) return;
+async function detectFaces(){
 
-  const reader =
-    new FileReader();
+if(!running) return;
 
-  reader.onload = async function(e) {
+try{
 
-    photo.src = e.target.result;
+detections=
+await faceapi.detectAllFaces(
+video,
+new faceapi.TinyFaceDetectorOptions()
+);
 
-    photo.onload = async function() {
+drawBoxes();
 
-      video.style.display = "none";
-      photo.style.display = "block";
 
-      currentImage = photo;
-      running = false;
+if(detections.length>0){
 
-      statusText.innerText =
-        "🖼️ Photo loaded. Analyze Now dabao.";
+statusText.innerText=
+"✅ "+
+detections.length+
+" face detected";
 
-      try {
+}else{
 
-        await loadAI();
+statusText.innerText=
+"🙂 Face camera ke saamne lao";
 
-        detections =
-          await faceapi.detectAllFaces(
-            photo,
-            new faceapi.TinyFaceDetectorOptions()
-          );
-
-      } catch (error) {
-
-        console.error(error);
-
-        detections = [];
-      }
-    };
-  };
-
-  reader.readAsDataURL(file);
 }
 
-function analyzeNow() {
+}catch(error){
 
-  if (!detections.length) {
+console.error(error);
 
-    alert(
-      "Face detect nahi hua. Clear photo try karo."
-    );
+}
 
-    return;
-  }
+setTimeout(
+detectFaces,
+500
+);
 
-  const first =
-    detections[0];
+}
 
-  const confidence =
-    Math.round(first.score * 100);
 
-  const box =
-    first.box;
+/* DRAW BOX */
 
-  const imageWidth =
-    currentImage.videoWidth ||
-    currentImage.naturalWidth;
+function drawBoxes(){
 
-  const imageHeight =
-    currentImage.videoHeight ||
-    currentImage.naturalHeight;
+const ctx=
+canvas.getContext("2d");
 
-  const faceArea =
-    (box.width * box.height) /
-    (imageWidth * imageHeight);
+ctx.clearRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
 
-  let faceSize;
+detections.forEach(d=>{
 
-  if (faceArea > 0.12) {
+const box=d.box;
 
-    faceSize = "Good 👍";
+ctx.strokeStyle="#00ff00";
 
-  } else {
+ctx.lineWidth=5;
 
-    faceSize = "Face thoda door hai";
-  }
+ctx.strokeRect(
+box.x,
+box.y,
+box.width,
+box.height
+);
 
-  const centerX =
-    box.x + box.width / 2;
+});
 
-  const centerY =
-    box.y + box.height / 2;
+}
 
-  const imageCenterX =
-    imageWidth / 2;
 
-  const imageCenterY =
-    imageHeight / 2;
+/* TAKE PHOTO */
 
-  const distance =
-    Math.sqrt(
-      Math.pow(centerX - imageCenterX, 2) +
-      Math.pow(centerY - imageCenterY, 2)
-    );
+function takePhoto(){
 
-  const maxDistance =
-    Math.sqrt(
-      Math.pow(imageCenterX, 2) +
-      Math.pow(imageCenterY, 2)
-    );
+if(!video.srcObject){
 
-  const positionScore =
-    1 - distance / maxDistance;
+showFunnyPopup(
+"📷",
+"Pehle camera start karo!",
+"Uske baad photo capture karna."
+);
 
-  let facePosition;
+return;
 
-  if (positionScore > 0.65) {
+}
 
-    facePosition = "Centered ✅";
+const tempCanvas=
+document.createElement("canvas");
 
-  } else {
+tempCanvas.width=
+video.videoWidth;
 
-    facePosition = "Move face toward center";
-  }
+tempCanvas.height=
+video.videoHeight;
 
-  let lighting;
+const ctx=
+tempCanvas.getContext("2d");
 
-  if (confidence >= 85) {
+ctx.drawImage(
+video,
+0,
+0,
+tempCanvas.width,
+tempCanvas.height
+);
 
-    lighting = "Good 👍";
+photo.src=
+tempCanvas.toDataURL("image/jpeg");
 
-  } else if (confidence >= 65) {
+photo.style.display="block";
 
-    lighting = "Okay 🙂";
+video.style.display="none";
 
-  } else {
+currentImage=photo;
 
-    lighting = "Improve lighting 💡";
-  }
+running=false;
 
-  let quality =
-    Math.round(
-      confidence * 0.5 +
-      Math.min(faceArea * 400, 100) * 0.2 +
-      Math.max(positionScore, 0) * 100 * 0.3
-    );
+statusText.innerText=
+"📸 Photo captured. Analyze Now dabao.";
 
-  quality =
-    Math.max(0, Math.min(100, quality));
+}
 
-  let suggestion;
 
-  if (quality >= 85) {
+/* UPLOAD PHOTO */
 
-    suggestion =
-      "Photo looks clear. Great! ✨";
+function uploadPhoto(event){
 
-  } else if (quality >= 65) {
+const file=
+event.target.files[0];
 
-    suggestion =
-      "Thodi better lighting/position try karo.";
+if(!file) return;
 
-  } else {
 
-    suggestion =
-      "Face ko closer aur lighting ko better karo.";
-  }
+const reader=
+new FileReader();
 
-  document.getElementById("result")
-    .style.display = "block";
 
-  document.getElementById("quality")
-    .innerText =
-    quality + "/100";
+reader.onload=
+async function(e){
 
-  document.getElementById("faceCount")
-    .innerText =
-    detections.length;
+photo.src=e.target.result;
 
-  document.getElementById("confidence")
-    .innerText =
-    confidence + "%";
 
-  document.getElementById("lighting")
-    .innerText =
-    lighting;
+photo.onload=
+async function(){
 
-  document.getElementById("faceSize")
-    .innerText =
-    faceSize;
+video.style.display="none";
 
-  document.getElementById("facePosition")
-    .innerText =
-    facePosition;
+photo.style.display="block";
 
-  document.getElementById("imageStatus")
-    .innerText =
-    "Face clearly visible ✅";
+currentImage=photo;
 
-  document.getElementById("suggestion")
-    .innerText =
-    suggestion;
+running=false;
 
-  statusText.innerText =
-    "🎉 Analysis complete!";
+statusText.innerText=
+"🖼️ Photo loaded. Analyze Now dabao.";
+
+
+try{
+
+await loadAI();
+
+
+detections=
+await faceapi.detectAllFaces(
+photo,
+new faceapi.TinyFaceDetectorOptions()
+);
+
+
+if(!detections.length){
+
+showFunnyPopup(
+"🤦😂",
+"Arre bhai!",
+"Is photo mein face detect nahi hua 😄"
+);
+
+}
+
+
+}catch(error){
+
+console.error(error);
+
+detections=[];
+
+showFunnyPopup(
+"🤦😂",
+"Photo samajh nahi aayi!",
+"Ek clear photo try karo."
+);
+
+}
+
+};
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+
+/* ANALYZE */
+
+function analyzeNow(){
+
+if(!detections.length){
+
+showFunnyPopup(
+"🤦😂",
+"Oye! Sahi photo daal 😄",
+"Face detect nahi hua. Clear photo try karo."
+);
+
+return;
+
+}
+
+
+const first=
+detections[0];
+
+const confidence=
+Math.round(
+first.score*100
+);
+
+const box=
+first.box;
+
+
+const imageWidth=
+currentImage.videoWidth ||
+currentImage.naturalWidth;
+
+const imageHeight=
+currentImage.videoHeight ||
+currentImage.naturalHeight;
+
+
+const faceArea=
+(box.width*box.height) /
+(imageWidth*imageHeight);
+
+
+let faceSize;
+
+
+if(faceArea>0.12){
+
+faceSize=
+"Good 👍";
+
+}else{
+
+faceSize=
+"Face thoda door hai";
+
+}
+
+
+const centerX=
+box.x+
+box.width/2;
+
+const centerY=
+box.y+
+box.height/2;
+
+
+const imageCenterX=
+imageWidth/2;
+
+const imageCenterY=
+imageHeight/2;
+
+
+const distance=
+Math.sqrt(
+Math.pow(
+centerX-imageCenterX,
+2
+)+
+Math.pow(
+centerY-imageCenterY,
+2
+)
+);
+
+
+const maxDistance=
+Math.sqrt(
+Math.pow(
+imageCenterX,
+2
+)+
+Math.pow(
+imageCenterY,
+2
+)
+);
+
+
+const positionScore=
+1-distance/maxDistance;
+
+
+let facePosition;
+
+
+if(positionScore>0.65){
+
+facePosition=
+"Centered ✅";
+
+}else{
+
+facePosition=
+"Move face toward center";
+
+}
+
+
+let lighting;
+
+
+if(confidence>=85){
+
+lighting=
+"Good 👍";
+
+}else if(confidence>=65){
+
+lighting=
+"Okay 🙂";
+
+}else{
+
+lighting=
+"Improve lighting 💡";
+
+}
+
+
+let quality=
+Math.round(
+
+confidence*0.5+
+
+Math.min(
+faceArea*400,
+100
+)*0.2+
+
+Math.max(
+positionScore,
+0
+)*100*0.3
+
+);
+
+
+quality=
+Math.max(
+0,
+Math.min(
+100,
+quality
+)
+);
+
+
+let suggestion;
+
+
+if(quality>=85){
+
+suggestion=
+"Photo looks clear. Great! ✨";
+
+}else if(quality>=65){
+
+suggestion=
+"Thodi better lighting/position try karo.";
+
+}else{
+
+suggestion=
+"Face ko closer aur lighting ko better karo.";
+
+}
+
+
+document.getElementById("result")
+.style.display="block";
+
+
+document.getElementById("quality")
+.innerText=
+quality+"/100";
+
+
+document.getElementById("faceCount")
+.innerText=
+detections.length;
+
+
+document.getElementById("confidence")
+.innerText=
+confidence+"%";
+
+
+document.getElementById("lighting")
+.innerText=
+lighting;
+
+
+document.getElementById("faceSize")
+.innerText=
+faceSize;
+
+
+document.getElementById("facePosition")
+.innerText=
+facePosition;
+
+
+document.getElementById("imageStatus")
+.innerText=
+"Face clearly visible ✅";
+
+
+document.getElementById("suggestion")
+.innerText=
+suggestion;
+
+
+statusText.innerText=
+"🎉 Analysis complete!";
+
 }
 
 </script>
+
+
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js");
-  });
+
+if("serviceWorker" in navigator){
+
+window.addEventListener(
+"load",
+()=>{
+navigator.serviceWorker.register("/sw.js");
 }
+);
+
+}
+
 </script>
+
 </body>
 </html>
