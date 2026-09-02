@@ -2,14 +2,17 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lovepreet AI</title>
+  <title>Lovepreet AI Face Analyzer</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f4f4f4;
       margin: 0;
-      padding: 25px 15px;
+      padding: 20px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
     }
 
     h1 {
@@ -20,24 +23,30 @@
       width: 100%;
       max-width: 420px;
       border-radius: 20px;
-      background: #000;
       margin-top: 20px;
+      background: black;
     }
 
     button {
-      padding: 14px 22px;
       border: 0;
       border-radius: 12px;
+      padding: 14px 22px;
       font-size: 17px;
       margin-top: 15px;
     }
 
+    #status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
     #result {
       margin: 20px auto;
-      padding: 18px;
+      padding: 20px;
       max-width: 380px;
       background: white;
       border-radius: 18px;
+      display: none;
     }
   </style>
 </head>
@@ -45,32 +54,92 @@
 <body>
 
 <h1>❤️ Lovepreet AI</h1>
-<p>Face Detection App</p>
+<p>Face Detection & Age Estimation</p>
 
 <button onclick="startCamera()">📷 Start Camera</button>
 
-<video id="camera" autoplay playsinline></video>
+<br>
+
+<video id="camera" autoplay muted playsinline></video>
+
+<p id="status">Start Camera dabao.</p>
 
 <div id="result">
-  <p id="status">Camera start karo.</p>
+  <h2>🔎 Analysis</h2>
+  <p id="face">Face: --</p>
   <p id="age">Estimated Age: --</p>
 </div>
 
 <script>
+const video = document.getElementById("camera");
+const statusText = document.getElementById("status");
+
+async function loadAI() {
+  statusText.innerText = "AI model load ho raha hai...";
+
+  await faceapi.nets.tinyFaceDetector.loadFromUri(
+    "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
+  );
+
+  await faceapi.nets.ageGenderNet.loadFromUri(
+    "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
+  );
+
+  statusText.innerText = "AI ready ✅";
+}
+
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true
     });
 
-    document.getElementById("camera").srcObject = stream;
-    document.getElementById("status").innerText =
-      "Camera working ✅";
+    video.srcObject = stream;
+
+    await loadAI();
+
+    statusText.innerText = "Face camera ke saamne lao 🙂";
+
+    video.onplaying = () => {
+      analyzeFace();
+    };
 
   } catch (error) {
-    document.getElementById("status").innerText =
-      "Camera permission nahi mili.";
+    console.error(error);
+    statusText.innerText = "Camera ya AI model start nahi hua.";
   }
+}
+
+async function analyzeFace() {
+
+  const result = await faceapi
+    .detectSingleFace(
+      video,
+      new faceapi.TinyFaceDetectorOptions()
+    )
+    .withAgeAndGender();
+
+  if (result) {
+
+    const estimatedAge = Math.round(result.age);
+
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("face").innerText =
+      "Face detected ✅";
+
+    document.getElementById("age").innerText =
+      "Estimated Age: " + estimatedAge + " years";
+
+    statusText.innerText = "Analysis complete ✅";
+
+  } else {
+
+    statusText.innerText =
+      "Face detect nahi hua — camera ki taraf dekho 🙂";
+  }
+
+  setTimeout(analyzeFace, 1000);
 }
 </script>
 
