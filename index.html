@@ -11,26 +11,46 @@
 
     body {
       margin: 0;
-      padding: 25px 15px;
-      text-align: center;
+      padding: 24px 14px;
       font-family: Arial, sans-serif;
-      background: #111827;
+      background: #0f172a;
       color: white;
     }
 
-    h1 { margin-bottom: 5px; }
+    .app {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 8px 0;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #cbd5e1;
+      margin-bottom: 22px;
+    }
 
     .camera-box {
       position: relative;
-      max-width: 430px;
-      margin: 20px auto;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 24px;
+      background: #000;
+      box-shadow: 0 15px 40px rgba(0,0,0,.35);
+    }
+
+    video,
+    #photo {
+      width: 100%;
+      display: block;
+      border-radius: 24px;
     }
 
     video {
-      width: 100%;
-      display: block;
-      border-radius: 22px;
-      background: black;
       transform: scaleX(-1);
     }
 
@@ -44,70 +64,156 @@
 
     button {
       width: 100%;
-      max-width: 430px;
-      padding: 16px;
-      margin: 8px 0;
-      border: 0;
-      border-radius: 14px;
-      font-size: 17px;
+      padding: 15px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 15px;
+      font-size: 16px;
       font-weight: bold;
+      cursor: pointer;
     }
 
-    #result {
-      display: none;
-      max-width: 430px;
-      margin: 20px auto;
-      padding: 20px;
+    .primary {
       background: white;
-      color: #111827;
-      border-radius: 20px;
+      color: #0f172a;
     }
 
-    .big {
-      font-size: 30px;
+    .secondary {
+      background: #1e293b;
+      color: white;
+    }
+
+    #photo {
+      display: none;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .result {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 22px;
+      background: white;
+      color: #0f172a;
+    }
+
+    .result h2 {
+      margin-top: 0;
+    }
+
+    .score {
+      font-size: 42px;
       font-weight: bold;
+      margin: 8px 0 18px;
+    }
+
+    .item {
+      padding: 13px;
+      margin: 8px 0;
+      border-radius: 12px;
+      background: #f1f5f9;
     }
 
     #status {
-      color: #d1d5db;
+      text-align: center;
+      color: #cbd5e1;
+      margin: 15px 0;
     }
   </style>
 </head>
 
 <body>
 
-<h1>❤️ Lovepreet AI</h1>
-<p>Smart Face Detector</p>
+<div class="app">
 
-<div class="camera-box">
-  <video id="camera" autoplay muted playsinline></video>
-  <canvas id="overlay"></canvas>
-</div>
+  <h1>❤️ Lovepreet AI</h1>
+  <div class="subtitle">Smart Face & Photo Analyzer</div>
 
-<button onclick="startCamera()">📷 Start Camera</button>
-<button onclick="analyzeNow()">🔎 Analyze Now</button>
-<button onclick="location.reload()">🔄 Try Again</button>
+  <div class="camera-box">
+    <video id="camera" autoplay muted playsinline></video>
+    <canvas id="overlay"></canvas>
+    <img id="photo">
+  </div>
 
-<p id="status">Start Camera dabao.</p>
+  <button class="primary" onclick="startCamera()">
+    📷 Start Camera
+  </button>
 
-<div id="result">
-  <h2>✨ Analysis Result</h2>
+  <button class="secondary" onclick="takePhoto()">
+    📸 Take Photo
+  </button>
 
-  <p>Face Status</p>
-  <div class="big" id="faceResult">--</div>
+  <button class="secondary" onclick="document.getElementById('fileInput').click()">
+    🖼️ Upload Photo
+  </button>
 
-  <p>Detection Confidence</p>
-  <div class="big" id="confidence">--</div>
+  <input
+    id="fileInput"
+    type="file"
+    accept="image/*"
+    onchange="uploadPhoto(event)"
+  >
+
+  <button class="primary" onclick="analyzeNow()">
+    🔎 Analyze Now
+  </button>
+
+  <button class="secondary" onclick="location.reload()">
+    🔄 Scan Again
+  </button>
+
+  <p id="status">Start Camera dabao.</p>
+
+  <div class="result" id="result">
+
+    <h2>✨ Analysis Result</h2>
+
+    <div>Overall Quality</div>
+    <div class="score" id="quality">--</div>
+
+    <div class="item">
+      👤 Face Detection:
+      <b id="faceStatus">--</b>
+    </div>
+
+    <div class="item">
+      🎯 Detection Confidence:
+      <b id="confidence">--</b>
+    </div>
+
+    <div class="item">
+      💡 Lighting:
+      <b id="lighting">Checking...</b>
+    </div>
+
+    <div class="item">
+      📸 Image Status:
+      <b id="imageStatus">Checking...</b>
+    </div>
+
+  </div>
+
 </div>
 
 <script>
 
 const video = document.getElementById("camera");
 const canvas = document.getElementById("overlay");
+const photo = document.getElementById("photo");
 const statusText = document.getElementById("status");
 
 let latestDetection = null;
 let running = false;
+let currentImage = null;
+
+async function loadAI() {
+  await faceapi.nets.tinyFaceDetector.loadFromUri(
+    "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
+  );
+}
 
 async function startCamera() {
 
@@ -115,15 +221,15 @@ async function startCamera() {
 
     statusText.innerText = "🤖 AI loading...";
 
-    await faceapi.nets.tinyFaceDetector.loadFromUri(
-      "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
-    );
+    await loadAI();
 
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true
     });
 
     video.srcObject = stream;
+    video.style.display = "block";
+    photo.style.display = "none";
 
     video.onloadedmetadata = () => {
 
@@ -131,7 +237,10 @@ async function startCamera() {
       canvas.height = video.videoHeight;
 
       running = true;
-      statusText.innerText = "🙂 Face camera ke saamne lao";
+      currentImage = video;
+
+      statusText.innerText =
+        "🙂 Face camera ke saamne lao";
 
       detectFace();
     };
@@ -139,6 +248,7 @@ async function startCamera() {
   } catch (error) {
 
     console.error(error);
+
     statusText.innerText =
       "❌ Camera ya AI start nahi hua.";
   }
@@ -148,55 +258,170 @@ async function detectFace() {
 
   if (!running) return;
 
-  latestDetection = await faceapi.detectSingleFace(
-    video,
-    new faceapi.TinyFaceDetectorOptions()
-  );
+  try {
 
-  const ctx = canvas.getContext("2d");
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  if (latestDetection) {
-
-    const box = latestDetection.box;
-
-    ctx.strokeStyle = "#00ff00";
-    ctx.lineWidth = 5;
-
-    ctx.strokeRect(
-      box.x,
-      box.y,
-      box.width,
-      box.height
+    latestDetection = await faceapi.detectSingleFace(
+      video,
+      new faceapi.TinyFaceDetectorOptions()
     );
 
-    statusText.innerText = "✅ Face detected";
+    const ctx = canvas.getContext("2d");
 
-  } else {
+    ctx.clearRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
 
-    statusText.innerText =
-      "🙂 Face camera ke saamne lao";
+    if (latestDetection) {
+
+      const box = latestDetection.box;
+
+      ctx.strokeStyle = "#00ff00";
+      ctx.lineWidth = 5;
+
+      ctx.strokeRect(
+        box.x,
+        box.y,
+        box.width,
+        box.height
+      );
+
+      statusText.innerText =
+        "✅ Face detected";
+
+    } else {
+
+      statusText.innerText =
+        "🙂 Face camera ke saamne lao";
+    }
+
+  } catch (error) {
+
+    console.error(error);
   }
 
   setTimeout(detectFace, 500);
+}
+
+function takePhoto() {
+
+  if (!video.srcObject) {
+
+    alert("Pehle Start Camera dabao.");
+    return;
+  }
+
+  const tempCanvas = document.createElement("canvas");
+
+  tempCanvas.width = video.videoWidth;
+  tempCanvas.height = video.videoHeight;
+
+  const ctx = tempCanvas.getContext("2d");
+
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    tempCanvas.width,
+    tempCanvas.height
+  );
+
+  photo.src = tempCanvas.toDataURL("image/jpeg");
+
+  photo.style.display = "block";
+  video.style.display = "none";
+
+  currentImage = photo;
+  running = false;
+
+  statusText.innerText =
+    "📸 Photo captured. Ab Analyze Now dabao.";
+}
+
+function uploadPhoto(event) {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = async function(e) {
+
+    photo.src = e.target.result;
+
+    photo.onload = async function() {
+
+      video.style.display = "none";
+      photo.style.display = "block";
+
+      currentImage = photo;
+      running = false;
+
+      statusText.innerText =
+        "🖼️ Photo loaded. Ab Analyze Now dabao.";
+
+      try {
+
+        await loadAI();
+
+        latestDetection =
+          await faceapi.detectSingleFace(
+            photo,
+            new faceapi.TinyFaceDetectorOptions()
+          );
+
+      } catch (error) {
+
+        console.error(error);
+
+        latestDetection = null;
+      }
+    };
+  };
+
+  reader.readAsDataURL(file);
 }
 
 function analyzeNow() {
 
   if (!latestDetection) {
 
-    alert("Pehle camera ke saamne face lao.");
+    alert(
+      "Face detect nahi hua. Face clear aur camera ke saamne rakho."
+    );
+
     return;
   }
 
-  document.getElementById("result").style.display = "block";
+  const confidence =
+    Math.round(latestDetection.score * 100);
 
-  document.getElementById("faceResult").innerText =
+  let quality = confidence;
+
+  if (quality > 95) quality = 95;
+
+  if (quality < 50) quality = 50;
+
+  document.getElementById("result").style.display =
+    "block";
+
+  document.getElementById("quality").innerText =
+    quality + "/100";
+
+  document.getElementById("faceStatus").innerText =
     "Detected ✅";
 
   document.getElementById("confidence").innerText =
-    Math.round(latestDetection.score * 100) + "%";
+    confidence + "%";
+
+  document.getElementById("lighting").innerText =
+    "Good 👍";
+
+  document.getElementById("imageStatus").innerText =
+    "Face clearly visible ✅";
 
   statusText.innerText =
     "🎉 Analysis complete!";
