@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0f172a">
 
@@ -11,367 +12,347 @@
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  padding:20px 14px 40px;
+  font-family:Arial,sans-serif;
+  background:#0f172a;
+  color:white;
 }
 
-body {
-  margin: 0;
-  padding: 20px 14px 40px;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
+.app{
+  max-width:520px;
+  margin:auto;
 }
 
-.app {
-  max-width: 520px;
-  margin: auto;
+h1{
+  text-align:center;
+  margin:8px 0;
+  font-size:31px;
 }
 
-h1 {
-  text-align: center;
-  margin: 8px 0;
-  font-size: 31px;
+.subtitle{
+  text-align:center;
+  color:#cbd5e1;
+  margin-bottom:20px;
 }
 
-.subtitle {
-  text-align: center;
-  color: #cbd5e1;
-  margin-bottom: 20px;
+.camera-box{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  border-radius:24px;
+  background:#000;
+  box-shadow:0 15px 40px rgba(0,0,0,.35);
 }
 
-.camera-box {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 24px;
-  background: #000;
-  box-shadow: 0 15px 40px rgba(0,0,0,.35);
+video,#photo{
+  width:100%;
+  display:block;
+  border-radius:24px;
 }
 
-video,
-#photo {
-  width: 100%;
-  display: block;
-  border-radius: 24px;
+video{
+  transform:scaleX(-1);
 }
 
-video {
-  transform: scaleX(-1);
+canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  transform:scaleX(-1);
+  pointer-events:none;
 }
 
-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: scaleX(-1);
-  pointer-events: none;
+button{
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border:none;
+  border-radius:15px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-button {
-  width: 100%;
-  padding: 15px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 15px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
+.primary{
+  background:white;
+  color:#0f172a;
 }
 
-.primary {
-  background: white;
-  color: #0f172a;
+.secondary{
+  background:#1e293b;
+  color:white;
 }
 
-.secondary {
-  background: #1e293b;
-  color: white;
+.green{
+  background:#16a34a;
+  color:white;
 }
 
-.green {
-  background: #16a34a;
-  color: white;
+.blue{
+  background:#0284c7;
+  color:white;
 }
 
-.blue {
-  background: #0284c7;
-  color: white;
+#fileInput{
+  display:none;
 }
 
-#fileInput {
-  display: none;
+#photo{
+  display:none;
 }
 
-#photo {
-  display: none;
+#status{
+  text-align:center;
+  color:#cbd5e1;
+  margin:15px 0;
 }
 
-#status {
-  text-align: center;
-  color: #cbd5e1;
-  margin: 15px 0;
+.result{
+  display:none;
+  margin-top:20px;
+  padding:18px;
+  border-radius:22px;
+  background:white;
+  color:#0f172a;
 }
 
-.result {
-  display: none;
-  margin-top: 20px;
-  padding: 18px;
-  border-radius: 22px;
-  background: white;
-  color: #0f172a;
+.score{
+  font-size:48px;
+  font-weight:bold;
+  text-align:center;
+  margin:10px 0 20px;
 }
 
-.score {
-  font-size: 48px;
-  font-weight: bold;
-  text-align: center;
-  margin: 10px 0 20px;
+.item{
+  padding:13px;
+  margin:8px 0;
+  border-radius:12px;
+  background:#f1f5f9;
 }
 
-.item {
-  padding: 13px;
-  margin: 8px 0;
-  border-radius: 12px;
-  background: #f1f5f9;
+.meter{
+  height:12px;
+  background:#e2e8f0;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:8px;
 }
 
-.meter {
-  height: 12px;
-  background: #e2e8f0;
-  border-radius: 20px;
-  overflow: hidden;
-  margin-top: 8px;
+.meter-fill{
+  height:100%;
+  width:0%;
+  background:#16a34a;
+  transition:width .5s;
 }
 
-.meter-fill {
-  height: 100%;
-  width: 0%;
-  background: #16a34a;
-  transition: width .5s;
+.tips{
+  margin-top:15px;
+  padding:15px;
+  border-radius:15px;
+  background:#e0f2fe;
 }
 
-.tips {
-  margin-top: 15px;
-  padding: 15px;
-  border-radius: 15px;
-  background: #e0f2fe;
+.history{
+  display:none;
+  margin-top:18px;
+  padding:16px;
+  border-radius:20px;
+  background:white;
+  color:#0f172a;
 }
 
-.history {
-  display: none;
-  margin-top: 18px;
-  padding: 16px;
-  border-radius: 20px;
-  background: white;
-  color: #0f172a;
+.history-item{
+  padding:10px;
+  margin:7px 0;
+  background:#f1f5f9;
+  border-radius:10px;
 }
 
-.history-item {
-  padding: 10px;
-  margin: 7px 0;
-  background: #f1f5f9;
-  border-radius: 10px;
+.profile-box{
+  display:none;
+  margin-top:15px;
+  padding:15px;
+  border-radius:18px;
+  background:#f8fafc;
+  color:#0f172a;
 }
 
-.profile-box {
-  display: none;
-  margin-top: 15px;
-  padding: 15px;
-  border-radius: 18px;
-  background: #f8fafc;
-  color: #0f172a;
+.small{
+  font-size:13px;
+  color:#64748b;
 }
 
-.small {
-  font-size: 13px;
-  color: #64748b;
+.guide{
+  position:absolute;
+  inset:10%;
+  border:3px dashed rgba(255,255,255,.7);
+  border-radius:50%;
+  pointer-events:none;
 }
 
-.guide {
-  position: absolute;
-  inset: 10%;
-  border: 3px dashed rgba(255,255,255,.7);
-  border-radius: 50%;
-  pointer-events: none;
+.popup{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.75);
+  z-index:9999;
 }
 
-.popup {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,.75);
-  z-index: 9999;
+.popup-content{
+  background:white;
+  color:#0f172a;
+  padding:30px;
+  border-radius:25px;
+  text-align:center;
+  width:85%;
+  max-width:350px;
 }
 
-.popup-content {
-  background: white;
-  color: #0f172a;
-  padding: 30px;
-  border-radius: 25px;
-  text-align: center;
-  width: 85%;
-  max-width: 350px;
+.emoji{
+  font-size:65px;
 }
 
-.emoji {
-  font-size: 65px;
+/* FAN */
+
+.fan-section{
+  margin-top:25px;
+  padding:20px;
+  border-radius:24px;
+  background:#172033;
+  text-align:center;
 }
 
-/* ================= FAN ================= */
-
-.fan-section {
-  margin-top: 25px;
-  padding: 20px;
-  border-radius: 24px;
-  background: #172033;
-  text-align: center;
+.fan-title{
+  font-size:23px;
+  font-weight:bold;
+  margin-bottom:5px;
 }
 
-.fan-title {
-  font-size: 23px;
-  font-weight: bold;
-  margin-bottom: 5px;
+.fan-subtitle{
+  color:#94a3b8;
+  font-size:13px;
+  margin-bottom:15px;
 }
 
-.fan-subtitle {
-  color: #94a3b8;
-  font-size: 13px;
-  margin-bottom: 15px;
+.fan{
+  width:180px;
+  height:180px;
+  margin:15px auto;
+  position:relative;
+  border-radius:50%;
+  background:#334155;
+  border:8px solid #475569;
+  box-shadow:inset 0 0 20px rgba(0,0,0,.5);
 }
 
-.fan {
-  width: 180px;
-  height: 180px;
-  margin: 15px auto;
-  position: relative;
-  border-radius: 50%;
-  background: #334155;
-  border: 8px solid #475569;
-  box-shadow: inset 0 0 20px rgba(0,0,0,.5);
+.fan-blades{
+  position:absolute;
+  width:100%;
+  height:100%;
+  left:0;
+  top:0;
 }
 
-.fan-blades {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
+.blade{
+  position:absolute;
+  width:45px;
+  height:82px;
+  left:59px;
+  top:10px;
+  background:#cbd5e1;
+  border-radius:60% 60% 25% 25%;
+  transform-origin:50% 100%;
+  opacity:.9;
 }
 
-.blade {
-  position: absolute;
-  width: 45px;
-  height: 82px;
-  left: 59px;
-  top: 10px;
-  background: #cbd5e1;
-  border-radius: 60% 60% 25% 25%;
-  transform-origin: 50% 100%;
-  opacity: .9;
+.blade:nth-child(1){transform:rotate(0deg)}
+.blade:nth-child(2){transform:rotate(72deg)}
+.blade:nth-child(3){transform:rotate(144deg)}
+.blade:nth-child(4){transform:rotate(216deg)}
+.blade:nth-child(5){transform:rotate(288deg)}
+
+.fan-center{
+  position:absolute;
+  width:42px;
+  height:42px;
+  background:#64748b;
+  border-radius:50%;
+  left:61px;
+  top:61px;
+  z-index:3;
+  border:5px solid #94a3b8;
 }
 
-.blade:nth-child(1) {
-  transform: rotate(0deg);
+.fan-running{
+  animation:fanSpin .25s linear infinite;
 }
 
-.blade:nth-child(2) {
-  transform: rotate(72deg);
+.speed1{
+  animation-duration:.7s;
 }
 
-.blade:nth-child(3) {
-  transform: rotate(144deg);
+.speed2{
+  animation-duration:.4s;
 }
 
-.blade:nth-child(4) {
-  transform: rotate(216deg);
+.speed3{
+  animation-duration:.18s;
 }
 
-.blade:nth-child(5) {
-  transform: rotate(288deg);
+@keyframes fanSpin{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
 }
 
-.fan-center {
-  position: absolute;
-  width: 42px;
-  height: 42px;
-  background: #64748b;
-  border-radius: 50%;
-  left: 61px;
-  top: 61px;
-  z-index: 3;
-  border: 5px solid #94a3b8;
+.air{
+  display:none;
+  font-size:25px;
+  letter-spacing:7px;
+  animation:airMove 1s linear infinite;
 }
 
-.fan-running {
-  animation: fanSpin .25s linear infinite;
+.air-show{
+  display:block;
 }
 
-.speed1 {
-  animation-duration: .7s;
-}
-
-.speed2 {
-  animation-duration: .4s;
-}
-
-.speed3 {
-  animation-duration: .18s;
-}
-
-@keyframes fanSpin {
-  from {
-    transform: rotate(0deg);
+@keyframes airMove{
+  0%{
+    opacity:.2;
+    transform:translateX(-10px);
   }
-  to {
-    transform: rotate(360deg);
-  }
-}
 
-.air {
-  display: none;
-  font-size: 25px;
-  letter-spacing: 7px;
-  animation: airMove 1s linear infinite;
-}
-
-.air-show {
-  display: block;
-}
-
-@keyframes airMove {
-  0% {
-    opacity: .2;
-    transform: translateX(-10px);
+  50%{
+    opacity:1;
   }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: .2;
-    transform: translateX(10px);
+
+  100%{
+    opacity:.2;
+    transform:translateX(10px);
   }
 }
 
-.speed-buttons {
-  display: flex;
-  gap: 7px;
+.speed-buttons{
+  display:flex;
+  gap:7px;
 }
 
-.speed-buttons button {
-  margin-top: 8px;
-  padding: 12px 5px;
+.speed-buttons button{
+  margin-top:8px;
+  padding:12px 5px;
 }
 
-.fan-status {
-  margin: 10px 0;
-  color: #cbd5e1;
-  font-weight: bold;
+.fan-status{
+  margin:10px 0;
+  color:#cbd5e1;
+  font-weight:bold;
 }
-
 </style>
 </head>
 
@@ -385,15 +366,9 @@ button {
 Smart Face & Photo Quality Analyzer
 </div>
 
-
-<!-- CAMERA -->
-
 <div class="camera-box">
 
-<video id="camera"
-       autoplay
-       muted
-       playsinline></video>
+<video id="camera" autoplay muted playsinline></video>
 
 <canvas id="overlay"></canvas>
 
@@ -403,50 +378,40 @@ Smart Face & Photo Quality Analyzer
 
 </div>
 
-
-<button class="primary"
-        onclick="startCamera()">
+<button class="primary" onclick="startCamera()">
 📷 Start Camera
 </button>
 
-<button class="secondary"
-        onclick="takePhoto()">
+<button class="secondary" onclick="takePhoto()">
 📸 Take Photo
 </button>
 
-<button class="secondary"
-        onclick="document.getElementById('fileInput').click()">
+<button class="secondary" onclick="document.getElementById('fileInput').click()">
 🖼️ Upload Photo
 </button>
 
-<input id="fileInput"
-       type="file"
-       accept="image/*"
-       onchange="uploadPhoto(event)">
+<input
+id="fileInput"
+type="file"
+accept="image/*"
+onchange="uploadPhoto(event)"
+>
 
-
-<button class="primary"
-        onclick="analyzeNow()">
+<button class="primary" onclick="analyzeNow()">
 🔎 Analyze Now
 </button>
 
-<button class="green"
-        onclick="checkProfilePicture()">
+<button class="green" onclick="checkProfilePicture()">
 👤 Profile-Pic Check
 </button>
 
-<button class="secondary"
-        onclick="location.reload()">
+<button class="secondary" onclick="location.reload()">
 🔄 Scan Again
 </button>
-
 
 <p id="status">
 Start Camera dabao ya photo upload karo.
 </p>
-
-
-<!-- RESULT -->
 
 <div class="result" id="result">
 
@@ -458,82 +423,72 @@ Start Camera dabao ya photo upload karo.
 --
 </div>
 
-
 <div class="item">
 👥 Faces Found:
 <b id="faceCount">--</b>
 </div>
 
-
 <div class="item">
+
 🎯 Detection Confidence:
 <b id="confidence">--</b>
 
 <div class="meter">
-<div class="meter-fill"
-     id="confidenceMeter"></div>
-</div>
+<div class="meter-fill" id="confidenceMeter"></div>
 </div>
 
+</div>
 
 <div class="item">
+
 💡 Lighting:
 <b id="lighting">--</b>
 
 <div class="meter">
-<div class="meter-fill"
-     id="lightingMeter"></div>
-</div>
+<div class="meter-fill" id="lightingMeter"></div>
 </div>
 
+</div>
 
 <div class="item">
 🔍 Face Size:
 <b id="faceSize">--</b>
 </div>
 
-
 <div class="item">
 📍 Face Position:
 <b id="facePosition">--</b>
 </div>
-
 
 <div class="item">
 👀 Face Visibility:
 <b id="visibility">--</b>
 </div>
 
-
 <div class="item">
 📐 Composition:
 <b id="composition">--</b>
 </div>
-
 
 <div class="item">
 🖼️ Background:
 <b id="background">--</b>
 </div>
 
-
 <div class="item">
 🌑 Shadow Check:
 <b id="shadow">--</b>
 </div>
-
 
 <div class="item">
 🔬 Sharpness:
 <b id="sharpness">--</b>
 </div>
 
-
 <div class="item">
 📱 Photo Readiness:
 <b id="readiness">--</b>
 </div>
-
 
 <div class="tips">
 
@@ -545,25 +500,17 @@ Start Camera dabao ya photo upload karo.
 
 </div>
 
-
-<button class="secondary"
-        onclick="copyReport()">
+<button class="secondary" onclick="copyReport()">
 📋 Copy Report
 </button>
 
-
-<button class="secondary"
-        onclick="shareResult()">
+<button class="secondary" onclick="shareResult()">
 📤 Share Result
 </button>
 
 </div>
 
-
-<!-- PROFILE -->
-
-<div class="profile-box"
-     id="profileBox">
+<div class="profile-box" id="profileBox">
 
 <h2>👤 Profile-Pic Check</h2>
 
@@ -572,17 +519,12 @@ Start Camera dabao ya photo upload karo.
 </p>
 
 <p class="small">
-Best result ke liye clear, centered aur
-properly framed photo use karo.
+Best result ke liye clear, centered aur properly framed photo use karo.
 </p>
 
 </div>
 
-
-<!-- HISTORY -->
-
-<div class="history"
-     id="history">
+<div class="history" id="history">
 
 <h2>🏆 Score History</h2>
 
@@ -590,15 +532,13 @@ properly framed photo use karo.
 No scans yet.
 </div>
 
-<button class="secondary"
-        onclick="clearHistory()">
+<button class="secondary" onclick="clearHistory()">
 🗑️ Clear History
 </button>
 
 </div>
 
-
-<!-- ================= FAN ================= -->
+<!-- VIRTUAL FAN -->
 
 <div class="fan-section">
 
@@ -610,11 +550,9 @@ No scans yet.
 Screen par chalne wala fun fan
 </div>
 
-
 <div class="fan" id="fan">
 
-<div class="fan-blades"
-     id="fanBlades">
+<div class="fan-blades" id="fanBlades">
 
 <div class="blade"></div>
 <div class="blade"></div>
@@ -628,40 +566,29 @@ Screen par chalne wala fun fan
 
 </div>
 
-
-<div class="air"
-     id="air">
+<div class="air" id="air">
 💨 💨 💨
 </div>
 
-
-<div class="fan-status"
-     id="fanStatus">
+<div class="fan-status" id="fanStatus">
 🔴 Fan OFF
 </div>
 
-
-<button class="blue"
-        onclick="toggleFan()"
-        id="fanButton">
+<button class="blue" onclick="toggleFan()" id="fanButton">
 🌀 Turn Fan ON
 </button>
 
-
 <div class="speed-buttons">
 
-<button class="secondary"
-        onclick="setFanSpeed(1)">
+<button class="secondary" onclick="setFanSpeed(1)">
 1️⃣ Slow
 </button>
 
-<button class="secondary"
-        onclick="setFanSpeed(2)">
+<button class="secondary" onclick="setFanSpeed(2)">
 2️⃣ Medium
 </button>
 
-<button class="secondary"
-        onclick="setFanSpeed(3)">
+<button class="secondary" onclick="setFanSpeed(3)">
 3️⃣ Fast
 </button>
 
@@ -671,16 +598,13 @@ Screen par chalne wala fun fan
 
 </div>
 
-
 <!-- POPUP -->
 
-<div class="popup"
-     id="popup">
+<div class="popup" id="popup">
 
 <div class="popup-content">
 
-<div class="emoji"
-     id="popupEmoji">
+<div class="emoji" id="popupEmoji">
 🤦😂
 </div>
 
@@ -692,8 +616,7 @@ Oops!
 Kuch improve karna padega 😅
 </p>
 
-<button class="primary"
-        onclick="closePopup()">
+<button class="primary" onclick="closePopup()">
 👍 OK
 </button>
 
@@ -701,12 +624,7 @@ Kuch improve karna padega 😅
 
 </div>
 
-
 <script>
-
-/* =========================
-   VARIABLES
-========================= */
 
 const video =
 document.getElementById("camera");
@@ -724,971 +642,736 @@ const guide =
 document.getElementById("guide");
 
 let detections = [];
+
 let running = false;
+
 let currentImage = null;
+
 let aiLoaded = false;
 
 let fanOn = false;
+
 let fanSpeed = 2;
 
 
-/* =========================
-   AI
-========================= */
+/* AI */
 
-async function loadAI() {
+async function loadAI(){
 
-if (aiLoaded) return;
+  if(aiLoaded) return;
 
-statusText.innerText =
-"🤖 AI loading...";
+  statusText.innerText =
+  "🤖 AI loading...";
 
-await faceapi.nets.tinyFaceDetector.loadFromUri(
-"https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
-);
+  await faceapi.nets.tinyFaceDetector.loadFromUri(
+    "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
+  );
 
-aiLoaded = true;
+  aiLoaded = true;
+}
+
+
+/* CAMERA */
+
+async function startCamera(){
+
+  try{
+
+    await loadAI();
+
+    const stream =
+    await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:"user"}
+    });
+
+    video.srcObject = stream;
+
+    video.style.display = "block";
+
+    photo.style.display = "none";
+
+    guide.style.display = "block";
+
+    video.onloadedmetadata = ()=>{
+
+      canvas.width =
+      video.videoWidth;
+
+      canvas.height =
+      video.videoHeight;
+
+      running = true;
+
+      currentImage = video;
+
+      statusText.innerText =
+      "🙂 Face ko circle ke andar lao";
+
+      detectFaces();
+
+    };
+
+  }catch(error){
+
+    console.error(error);
+
+    showPopup(
+      "😅",
+      "Camera Error",
+      "Camera start nahi ho paaya."
+    );
+
+    statusText.innerText =
+    "❌ Camera start nahi hua.";
+
+  }
 
 }
 
 
-/* =========================
-   CAMERA
-========================= */
+/* FACE DETECTION */
 
-async function startCamera() {
+async function detectFaces(){
 
-try {
+  if(!running) return;
 
-await loadAI();
+  try{
 
-const stream =
-await navigator.mediaDevices.getUserMedia({
+    detections =
+    await faceapi.detectAllFaces(
+      video,
+      new faceapi.TinyFaceDetectorOptions()
+    );
 
-video: {
-facingMode: "user"
-}
+    drawBoxes();
 
-});
+    if(detections.length > 0){
 
-video.srcObject = stream;
+      statusText.innerText =
+      "✅ " +
+      detections.length +
+      " face detected";
 
-video.style.display = "block";
+    }else{
 
-photo.style.display = "none";
+      statusText.innerText =
+      "🙂 Face ko circle ke andar lao";
 
-guide.style.display = "block";
+    }
 
+  }catch(error){
 
-video.onloadedmetadata = () => {
+    console.error(error);
 
-canvas.width =
-video.videoWidth;
+  }
 
-canvas.height =
-video.videoHeight;
-
-running = true;
-
-currentImage = video;
-
-statusText.innerText =
-"🙂 Face ko circle ke andar lao";
-
-detectFaces();
-
-};
-
-} catch(error) {
-
-console.error(error);
-
-showPopup(
-"😅",
-"Camera Error",
-"Camera start nahi ho paaya."
-);
-
-statusText.innerText =
-"❌ Camera start nahi hua.";
-
-}
+  setTimeout(detectFaces,500);
 
 }
 
 
-/* =========================
-   DETECT
-========================= */
+/* BOX */
 
-async function detectFaces() {
+function drawBoxes(){
 
-if (!running) return;
+  const ctx =
+  canvas.getContext("2d");
 
-try {
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
 
-detections =
-await faceapi.detectAllFaces(
-video,
-new faceapi.TinyFaceDetectorOptions()
-);
+  detections.forEach(d=>{
 
-drawBoxes();
+    const box = d.box;
 
+    ctx.strokeStyle =
+    "#00ff00";
 
-if(detections.length > 0) {
+    ctx.lineWidth = 5;
 
-statusText.innerText =
-"✅ " +
-detections.length +
-" face detected";
+    ctx.strokeRect(
+      box.x,
+      box.y,
+      box.width,
+      box.height
+    );
 
-} else {
-
-statusText.innerText =
-"🙂 Face ko circle ke andar lao";
-
-}
-
-} catch(error) {
-
-console.error(error);
-
-}
-
-setTimeout(
-detectFaces,
-500
-);
+  });
 
 }
 
 
-/* =========================
-   BOX
-========================= */
+/* TAKE PHOTO */
 
-function drawBoxes() {
+function takePhoto(){
 
-const ctx =
-canvas.getContext("2d");
+  if(!video.srcObject){
 
-ctx.clearRect(
-0,
-0,
-canvas.width,
-canvas.height
-);
+    showPopup(
+      "📷",
+      "Camera Start Karo",
+      "Pehle Start Camera dabao."
+    );
 
+    return;
+  }
 
-detections.forEach(d => {
+  const tempCanvas =
+  document.createElement("canvas");
 
-const box =
-d.box;
+  tempCanvas.width =
+  video.videoWidth;
 
-ctx.strokeStyle =
-"#00ff00";
+  tempCanvas.height =
+  video.videoHeight;
 
-ctx.lineWidth = 5;
+  const ctx =
+  tempCanvas.getContext("2d");
 
-ctx.strokeRect(
-box.x,
-box.y,
-box.width,
-box.height
-);
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    tempCanvas.width,
+    tempCanvas.height
+  );
 
-});
+  photo.src =
+  tempCanvas.toDataURL(
+    "image/jpeg",
+    0.92
+  );
 
-}
+  photo.style.display =
+  "block";
 
+  video.style.display =
+  "none";
 
-/* =========================
-   TAKE PHOTO
-========================= */
+  guide.style.display =
+  "none";
 
-function takePhoto() {
+  currentImage =
+  photo;
 
-if(!video.srcObject) {
+  running = false;
 
-showPopup(
-"📷",
-"Camera Start Karo",
-"Pehle Start Camera dabao."
-);
-
-return;
-
-}
-
-
-const tempCanvas =
-document.createElement("canvas");
-
-tempCanvas.width =
-video.videoWidth;
-
-tempCanvas.height =
-video.videoHeight;
-
-
-const ctx =
-tempCanvas.getContext("2d");
-
-ctx.drawImage(
-video,
-0,
-0,
-tempCanvas.width,
-tempCanvas.height
-);
-
-
-photo.src =
-tempCanvas.toDataURL(
-"image/jpeg",
-0.92
-);
-
-photo.style.display =
-"block";
-
-video.style.display =
-"none";
-
-guide.style.display =
-"none";
-
-currentImage =
-photo;
-
-running = false;
-
-statusText.innerText =
-"📸 Photo captured. Analyze Now dabao.";
+  statusText.innerText =
+  "📸 Photo captured. Analyze Now dabao.";
 
 }
 
 
-/* =========================
-   UPLOAD
-========================= */
+/* UPLOAD */
 
-function uploadPhoto(event) {
+function uploadPhoto(event){
 
-const file =
-event.target.files[0];
+  const file =
+  event.target.files[0];
 
-if(!file) return;
+  if(!file) return;
 
+  const reader =
+  new FileReader();
 
-const reader =
-new FileReader();
+  reader.onload =
+  async function(e){
 
+    photo.src =
+    e.target.result;
 
-reader.onload =
-async function(e) {
+    photo.onload =
+    async function(){
 
-photo.src =
-e.target.result;
+      video.style.display =
+      "none";
 
+      photo.style.display =
+      "block";
 
-photo.onload =
-async function() {
+      guide.style.display =
+      "none";
 
-video.style.display =
-"none";
+      currentImage =
+      photo;
 
-photo.style.display =
-"block";
+      running = false;
 
-guide.style.display =
-"none";
+      statusText.innerText =
+      "🖼️ Photo loaded.";
 
-currentImage =
-photo;
+      try{
 
-running = false;
+        await loadAI();
 
+        detections =
+        await faceapi.detectAllFaces(
+          photo,
+          new faceapi.TinyFaceDetectorOptions()
+        );
 
-statusText.innerText =
-"🖼️ Photo loaded.";
+        if(!detections.length){
 
+          showPopup(
+            "🤦😂",
+            "Face Nahi Mila",
+            "Clear aur properly framed photo try karo."
+          );
 
-try {
+        }
 
-await loadAI();
+      }catch(error){
 
-detections =
-await faceapi.detectAllFaces(
-photo,
-new faceapi.TinyFaceDetectorOptions()
-);
+        console.error(error);
 
+        detections = [];
 
-if(!detections.length) {
+      }
 
-showPopup(
-"🤦😂",
-"Face Nahi Mila",
-"Clear aur properly framed photo try karo."
-);
+    };
 
-}
+  };
 
-} catch(error) {
-
-console.error(error);
-
-detections = [];
-
-}
-
-};
-
-};
-
-reader.readAsDataURL(file);
+  reader.readAsDataURL(file);
 
 }
 
 
-/* =========================
-   ANALYSIS
-========================= */
+/* ANALYZE */
 
-function analyzeNow() {
+function analyzeNow(){
 
-if(!currentImage) {
+  if(!currentImage){
 
-showPopup(
-"📸",
-"Photo Chahiye",
-"Pehle camera se photo lo ya upload karo."
-);
+    showPopup(
+      "📸",
+      "Photo Chahiye",
+      "Pehle camera se photo lo ya upload karo."
+    );
 
-return;
+    return;
+  }
+
+  if(!detections.length){
+
+    showPopup(
+      "🤦😂",
+      "Face Nahi Mila",
+      "Face clearly visible wali photo try karo."
+    );
+
+    return;
+  }
+
+  const first =
+  detections[0];
+
+  const confidence =
+  Math.round(first.score * 100);
+
+  const box =
+  first.box;
+
+  const imageWidth =
+  currentImage.videoWidth ||
+  currentImage.naturalWidth;
+
+  const imageHeight =
+  currentImage.videoHeight ||
+  currentImage.naturalHeight;
+
+  const faceArea =
+  (box.width * box.height) /
+  (imageWidth * imageHeight);
+
+  let faceSize;
+
+  if(faceArea > 0.12)
+    faceSize = "Good 👍";
+  else if(faceArea > 0.06)
+    faceSize = "Okay 🙂";
+  else
+    faceSize = "Face thoda door hai";
+
+  const centerX =
+  box.x + box.width / 2;
+
+  const centerY =
+  box.y + box.height / 2;
+
+  const imageCenterX =
+  imageWidth / 2;
+
+  const imageCenterY =
+  imageHeight / 2;
+
+  const distance =
+  Math.sqrt(
+    Math.pow(centerX-imageCenterX,2) +
+    Math.pow(centerY-imageCenterY,2)
+  );
+
+  const maxDistance =
+  Math.sqrt(
+    Math.pow(imageCenterX,2) +
+    Math.pow(imageCenterY,2)
+  );
+
+  const positionScore =
+  Math.max(
+    0,
+    1-distance/maxDistance
+  );
+
+  let facePosition =
+  positionScore > 0.65
+  ? "Centered ✅"
+  : "Move face toward center";
+
+  let lighting;
+
+  if(confidence >= 88)
+    lighting = "Good 👍";
+  else if(confidence >= 70)
+    lighting = "Okay 🙂";
+  else
+    lighting = "Improve lighting 💡";
+
+  let visibility;
+
+  if(confidence >= 90)
+    visibility = "Excellent 👀";
+  else if(confidence >= 75)
+    visibility = "Good 👍";
+  else
+    visibility = "Needs improvement";
+
+  let composition;
+
+  if(
+    positionScore > .7 &&
+    faceArea > .08
+  )
+    composition = "Excellent 📐";
+  else if(positionScore > .5)
+    composition = "Good 👍";
+  else
+    composition = "Reposition photo";
+
+  let background =
+  detections.length === 1
+  ? "Subject clear ✅"
+  : "Multiple faces detected";
+
+  let shadow =
+  confidence >= 85
+  ? "Low / acceptable ✅"
+  : "Possible heavy shadow 🌑";
+
+  let sharpness;
+
+  if(confidence >= 90)
+    sharpness = "Sharp & clear 🔬";
+  else if(confidence >= 75)
+    sharpness = "Okay";
+  else
+    sharpness = "May be blurry";
+
+  let quality =
+  Math.round(
+    confidence*.40 +
+    Math.min(faceArea*500,100)*.20 +
+    positionScore*100*.25 +
+    Math.min(
+      detections.length===1
+      ? 100
+      : 70,
+      100
+    )*.15
+  );
+
+  quality =
+  Math.max(
+    0,
+    Math.min(100,quality)
+  );
+
+  let readiness;
+
+  if(quality >= 90)
+    readiness =
+    "Ready to use 🚀";
+  else if(quality >= 75)
+    readiness =
+    "Almost ready 👍";
+  else
+    readiness =
+    "Retake recommended 📸";
+
+  let suggestion;
+
+  if(quality >= 90){
+
+    suggestion =
+    "Photo quality excellent! Keep the same framing and lighting. ✨";
+
+  }else{
+
+    const tips = [];
+
+    if(confidence < 80)
+      tips.push("better lighting");
+
+    if(faceArea < .08)
+      tips.push("camera ke thoda paas aao");
+
+    if(positionScore < .65)
+      tips.push("face ko center mein lao");
+
+    if(detections.length > 1)
+      tips.push("single-person photo try karo");
+
+    suggestion =
+    "Try: " +
+    tips.join(", ") +
+    ".";
+
+  }
+
+  document.getElementById("result")
+  .style.display =
+  "block";
+
+  document.getElementById("quality")
+  .innerText =
+  quality + "/100";
+
+  document.getElementById("faceCount")
+  .innerText =
+  detections.length;
+
+  document.getElementById("confidence")
+  .innerText =
+  confidence + "%";
+
+  document.getElementById("confidenceMeter")
+  .style.width =
+  confidence + "%";
+
+  document.getElementById("lighting")
+  .innerText =
+  lighting;
+
+  document.getElementById("lightingMeter")
+  .style.width =
+  confidence + "%";
+
+  document.getElementById("faceSize")
+  .innerText =
+  faceSize;
+
+  document.getElementById("facePosition")
+  .innerText =
+  facePosition;
+
+  document.getElementById("visibility")
+  .innerText =
+  visibility;
+
+  document.getElementById("composition")
+  .innerText =
+  composition;
+
+  document.getElementById("background")
+  .innerText =
+  background;
+
+  document.getElementById("shadow")
+  .innerText =
+  shadow;
+
+  document.getElementById("sharpness")
+  .innerText =
+  sharpness;
+
+  document.getElementById("readiness")
+  .innerText =
+  readiness;
+
+  document.getElementById("suggestion")
+  .innerText =
+  suggestion;
+
+  statusText.innerText =
+  "🎉 Analysis complete!";
+
+  saveHistory(quality);
 
 }
 
 
-if(!detections.length) {
+/* PROFILE PICTURE */
 
-showPopup(
-"🤦😂",
-"Face Nahi Mila",
-"Face clearly visible wali photo try karo."
-);
+function checkProfilePicture(){
 
-return;
+  if(!detections.length){
 
-}
+    showPopup(
+      "🤦😂",
+      "Face Nahi Mila",
+      "Pehle clear photo upload karo."
+    );
 
+    return;
+  }
 
-const first =
-detections[0];
+  const box =
+  detections[0].box;
 
-const confidence =
-Math.round(
-first.score * 100
-);
+  const imageWidth =
+  currentImage.videoWidth ||
+  currentImage.naturalWidth;
 
-const box =
-first.box;
+  const imageHeight =
+  currentImage.videoHeight ||
+  currentImage.naturalHeight;
 
+  const faceArea =
+  (box.width * box.height) /
+  (imageWidth * imageHeight);
 
-const imageWidth =
-currentImage.videoWidth ||
-currentImage.naturalWidth;
+  const centerX =
+  box.x + box.width/2;
 
-const imageHeight =
-currentImage.videoHeight ||
-currentImage.naturalHeight;
+  const centered =
+  Math.abs(
+    centerX-imageWidth/2
+  ) <
+  imageWidth*.18;
 
+  const goodSize =
+  faceArea > .06;
 
-/* FACE AREA */
+  let result;
 
-const faceArea =
-(box.width * box.height) /
-(imageWidth * imageHeight);
+  if(centered && goodSize)
 
+    result =
+    "✅ This photo is suitable for a profile picture.";
 
-let faceSize;
+  else
 
-if(faceArea > 0.12) {
+    result =
+    "📸 Try a closer and more centered photo.";
 
-faceSize =
-"Good 👍";
+  document.getElementById("profileBox")
+  .style.display =
+  "block";
 
-} else if(faceArea > 0.06) {
-
-faceSize =
-"Okay 🙂";
-
-} else {
-
-faceSize =
-"Face thoda door hai";
-
-}
-
-
-/* POSITION */
-
-const centerX =
-box.x +
-box.width / 2;
-
-const centerY =
-box.y +
-box.height / 2;
-
-const imageCenterX =
-imageWidth / 2;
-
-const imageCenterY =
-imageHeight / 2;
-
-
-const distance =
-Math.sqrt(
-Math.pow(
-centerX - imageCenterX,
-2
-) +
-Math.pow(
-centerY - imageCenterY,
-2
-)
-);
-
-
-const maxDistance =
-Math.sqrt(
-Math.pow(imageCenterX,2) +
-Math.pow(imageCenterY,2)
-);
-
-
-const positionScore =
-Math.max(
-0,
-1 - distance / maxDistance
-);
-
-
-let facePosition;
-
-if(positionScore > 0.65) {
-
-facePosition =
-"Centered ✅";
-
-} else {
-
-facePosition =
-"Move face toward center";
+  document.getElementById("profileResult")
+  .innerText =
+  result;
 
 }
 
 
-/* LIGHT */
+/* HISTORY */
 
-let lighting;
+function saveHistory(score){
 
-if(confidence >= 88) {
+  let history =
+  JSON.parse(
+    localStorage.getItem(
+      "lovepreetScores"
+    ) || "[]"
+  );
 
-lighting =
-"Good 👍";
+  history.unshift({
+    score:score,
+    date:new Date().toLocaleString()
+  });
 
-} else if(confidence >= 70) {
+  history =
+  history.slice(0,10);
 
-lighting =
-"Okay 🙂";
+  localStorage.setItem(
+    "lovepreetScores",
+    JSON.stringify(history)
+  );
 
-} else {
-
-lighting =
-"Improve lighting 💡";
-
-}
-
-
-/* VISIBILITY */
-
-let visibility;
-
-if(confidence >= 90) {
-
-visibility =
-"Excellent 👀";
-
-} else if(confidence >= 75) {
-
-visibility =
-"Good 👍";
-
-} else {
-
-visibility =
-"Needs improvement";
+  displayHistory();
 
 }
 
 
-/* COMPOSITION */
+function displayHistory(){
 
-let composition;
+  const history =
+  JSON.parse(
+    localStorage.getItem(
+      "lovepreetScores"
+    ) || "[]"
+  );
 
-if(
-positionScore > .7 &&
-faceArea > .08
-) {
+  const box =
+  document.getElementById("history");
 
-composition =
-"Excellent 📐";
+  const list =
+  document.getElementById("historyList");
 
-} else if(
-positionScore > .5
-) {
+  if(!history.length){
 
-composition =
-"Good 👍";
+    box.style.display =
+    "none";
 
-} else {
+    return;
 
-composition =
-"Reposition photo";
+  }
 
-}
+  box.style.display =
+  "block";
 
+  list.innerHTML =
+  history.map(
+    (item,index)=>{
 
-/* BACKGROUND */
+      return `
+      <div class="history-item">
+      🏅 Scan ${index+1} —
+      <b>${item.score}/100</b>
+      <br>
+      <span class="small">
+      ${item.date}
+      </span>
+      </div>
+      `;
 
-let background;
-
-if(detections.length === 1) {
-
-background =
-"Subject clear ✅";
-
-} else {
-
-background =
-"Multiple faces detected";
-
-}
-
-
-/* SHADOW */
-
-let shadow;
-
-if(confidence >= 85) {
-
-shadow =
-"Low / acceptable ✅";
-
-} else {
-
-shadow =
-"Possible heavy shadow 🌑";
+    }
+  ).join("");
 
 }
 
 
-/* SHARPNESS */
+function clearHistory(){
 
-let sharpness;
+  localStorage.removeItem(
+    "lovepreetScores"
+  );
 
-if(confidence >= 90) {
-
-sharpness =
-"Sharp & clear 🔬";
-
-} else if(confidence >= 75) {
-
-sharpness =
-"Okay";
-
-} else {
-
-sharpness =
-"May be blurry";
+  displayHistory();
 
 }
 
 
-/* SCORE */
+/* COPY REPORT */
 
-let quality =
-Math.round(
+function copyReport(){
 
-confidence * .40 +
-
-Math.min(
-faceArea * 500,
-100
-) * .20 +
-
-positionScore *
-100 * .25 +
-
-Math.min(
-detections.length === 1
-? 100
-: 70,
-100
-) * .15
-
-);
-
-
-quality =
-Math.max(
-0,
-Math.min(
-100,
-quality
-)
-);
-
-
-/* READINESS */
-
-let readiness;
-
-if(quality >= 90) {
-
-readiness =
-"Ready to use 🚀";
-
-} else if(quality >= 75) {
-
-readiness =
-"Almost ready 👍";
-
-} else {
-
-readiness =
-"Retake recommended 📸";
-
-}
-
-
-/* COACH */
-
-let suggestion;
-
-if(quality >= 90) {
-
-suggestion =
-"Photo quality excellent! Keep the same framing and lighting. ✨";
-
-} else {
-
-const tips = [];
-
-if(confidence < 80)
-tips.push("better lighting");
-
-if(faceArea < .08)
-tips.push("camera ke thoda paas aao");
-
-if(positionScore < .65)
-tips.push("face ko center mein lao");
-
-if(detections.length > 1)
-tips.push("single-person photo try karo");
-
-suggestion =
-"Try: " +
-tips.join(", ") +
-".";
-
-}
-
-
-/* DISPLAY */
-
-document.getElementById("result")
-.style.display =
-"block";
-
-document.getElementById("quality")
-.innerText =
-quality + "/100";
-
-document.getElementById("faceCount")
-.innerText =
-detections.length;
-
-document.getElementById("confidence")
-.innerText =
-confidence + "%";
-
-document.getElementById("confidenceMeter")
-.style.width =
-confidence + "%";
-
-document.getElementById("lighting")
-.innerText =
-lighting;
-
-document.getElementById("lightingMeter")
-.style.width =
-confidence + "%";
-
-document.getElementById("faceSize")
-.innerText =
-faceSize;
-
-document.getElementById("facePosition")
-.innerText =
-facePosition;
-
-document.getElementById("visibility")
-.innerText =
-visibility;
-
-document.getElementById("composition")
-.innerText =
-composition;
-
-document.getElementById("background")
-.innerText =
-background;
-
-document.getElementById("shadow")
-.innerText =
-shadow;
-
-document.getElementById("sharpness")
-.innerText =
-sharpness;
-
-document.getElementById("readiness")
-.innerText =
-readiness;
-
-document.getElementById("suggestion")
-.innerText =
-suggestion;
-
-statusText.innerText =
-"🎉 Analysis complete!";
-
-saveHistory(quality);
-
-}
-
-
-/* =========================
-   PROFILE CHECK
-========================= */
-
-function checkProfilePicture() {
-
-if(!detections.length) {
-
-showPopup(
-"🤦😂",
-"Face Nahi Mila",
-"Pehle clear photo upload karo."
-);
-
-return;
-
-}
-
-
-const box =
-detections[0].box;
-
-const imageWidth =
-currentImage.videoWidth ||
-currentImage.naturalWidth;
-
-const imageHeight =
-currentImage.videoHeight ||
-currentImage.naturalHeight;
-
-
-const faceArea =
-(box.width * box.height) /
-(imageWidth * imageHeight);
-
-
-const centerX =
-box.x +
-box.width / 2;
-
-const centered =
-Math.abs(
-centerX -
-imageWidth / 2
-) <
-imageWidth * .18;
-
-
-const goodSize =
-faceArea > .06;
-
-
-let result;
-
-
-if(centered && goodSize) {
-
-result =
-"✅ This photo is suitable for a profile picture.";
-
-} else {
-
-result =
-"📸 Try a closer and more centered photo.";
-
-}
-
-
-document.getElementById(
-"profileBox"
-).style.display =
-"block";
-
-
-document.getElementById(
-"profileResult"
-).innerText =
-result;
-
-}
-
-
-/* =========================
-   HISTORY
-========================= */
-
-function saveHistory(score) {
-
-let history =
-JSON.parse(
-localStorage.getItem(
-"lovepreetScores"
-) || "[]"
-);
-
-
-history.unshift({
-
-score: score,
-
-date:
-new Date().toLocaleString()
-
-});
-
-
-history =
-history.slice(
-0,
-10
-);
-
-
-localStorage.setItem(
-"lovepreetScores",
-JSON.stringify(history)
-);
-
-
-displayHistory();
-
-}
-
-
-function displayHistory() {
-
-const history =
-JSON.parse(
-localStorage.getItem(
-"lovepreetScores"
-) || "[]"
-);
-
-
-const box =
-document.getElementById(
-"history"
-);
-
-const list =
-document.getElementById(
-"historyList"
-);
-
-
-if(!history.length) {
-
-box.style.display =
-"none";
-
-return;
-
-}
-
-
-box.style.display =
-"block";
-
-
-list.innerHTML =
-history.map(
-(item,index) => {
-
-return `
-
-<div class="history-item">
-
-🏅 Scan ${index + 1}
-—
-<b>${item.score}/100</b>
-
-<br>
-
-<span class="small">
-${item.date}
-</span>
-
-</div>
-
-`;
-
-}
-).join("");
-
-}
-
-
-function clearHistory() {
-
-localStorage.removeItem(
-"lovepreetScores"
-);
-
-displayHistory();
-
-}
-
-
-/* =========================
-   COPY
-========================= */
-
-function copyReport() {
-
-const text =
-
+  const text =
 `Lovepreet AI Report
 
 Quality:
@@ -1724,241 +1407,219 @@ ${document.getElementById("readiness").innerText}
 AI Coach:
 ${document.getElementById("suggestion").innerText}`;
 
+  navigator.clipboard.writeText(text)
+  .then(()=>{
 
-navigator.clipboard.writeText(
-text
-).then(() => {
+    showPopup(
+      "📋",
+      "Copied!",
+      "Report clipboard mein copy ho gayi."
+    );
 
-showPopup(
-"📋",
-"Copied!",
-"Report clipboard mein copy ho gayi."
-);
-
-});
+  });
 
 }
 
 
-/* =========================
-   SHARE
-========================= */
+/* SHARE */
 
-function shareResult() {
+function shareResult(){
 
-const score =
-document.getElementById(
-"quality"
-).innerText;
+  const score =
+  document.getElementById(
+    "quality"
+  ).innerText;
 
+  const text =
+  "My Lovepreet AI Photo Quality Score: " +
+  score +
+  " 🚀";
 
-const text =
-"My Lovepreet AI Photo Quality Score: " +
-score +
-" 🚀";
+  if(navigator.share){
 
+    navigator.share({
+      title:"Lovepreet AI Result",
+      text:text
+    });
 
-if(navigator.share) {
+  }else{
 
-navigator.share({
+    navigator.clipboard.writeText(text);
 
-title:
-"Lovepreet AI Result",
+    showPopup(
+      "📤",
+      "Ready!",
+      "Share text copy ho gaya."
+    );
 
-text:
-text
-
-});
-
-} else {
-
-navigator.clipboard.writeText(
-text
-);
-
-showPopup(
-"📤",
-"Ready!",
-"Share text copy ho gaya."
-);
-
-}
+  }
 
 }
 
 
-/* =========================
-   POPUP
-========================= */
+/* POPUP */
 
 function showPopup(
-emoji,
-title,
-text
-) {
+  emoji,
+  title,
+  text
+){
 
-document.getElementById(
-"popupEmoji"
-).innerText =
-emoji;
+  document.getElementById(
+    "popupEmoji"
+  ).innerText =
+  emoji;
 
-document.getElementById(
-"popupTitle"
-).innerText =
-title;
+  document.getElementById(
+    "popupTitle"
+  ).innerText =
+  title;
 
-document.getElementById(
-"popupText"
-).innerText =
-text;
+  document.getElementById(
+    "popupText"
+  ).innerText =
+  text;
 
-document.getElementById(
-"popup"
-).style.display =
-"flex";
-
-}
-
-
-function closePopup() {
-
-document.getElementById(
-"popup"
-).style.display =
-"none";
+  document.getElementById(
+    "popup"
+  ).style.display =
+  "flex";
 
 }
 
 
-/* =========================
-   FAN SYSTEM
-========================= */
+function closePopup(){
 
-function toggleFan() {
-
-fanOn =
-!fanOn;
-
-updateFan();
+  document.getElementById(
+    "popup"
+  ).style.display =
+  "none";
 
 }
 
 
-function setFanSpeed(speed) {
+/* FAN */
 
-fanSpeed =
-speed;
+function toggleFan(){
 
-if(!fanOn) {
+  fanOn =
+  !fanOn;
 
-fanOn = true;
-
-}
-
-updateFan();
+  updateFan();
 
 }
 
 
-function updateFan() {
+function setFanSpeed(speed){
 
-const fan =
-document.getElementById(
-"fan"
-);
+  fanSpeed =
+  speed;
 
-const blades =
-document.getElementById(
-"fanBlades"
-);
+  if(!fanOn)
+    fanOn = true;
 
-const air =
-document.getElementById(
-"air"
-);
-
-const status =
-document.getElementById(
-"fanStatus"
-);
-
-const button =
-document.getElementById(
-"fanButton"
-);
-
-
-blades.classList.remove(
-"fan-running",
-"speed1",
-"speed2",
-"speed3"
-);
-
-
-if(fanOn) {
-
-blades.classList.add(
-"fan-running"
-);
-
-blades.classList.add(
-"speed" + fanSpeed
-);
-
-air.classList.add(
-"air-show"
-);
-
-status.innerText =
-"🟢 Fan ON • Speed " +
-fanSpeed;
-
-button.innerText =
-"⏹️ Turn Fan OFF";
-
-} else {
-
-air.classList.remove(
-"air-show"
-);
-
-status.innerText =
-"🔴 Fan OFF";
-
-button.innerText =
-"🌀 Turn Fan ON";
-
-}
+  updateFan();
 
 }
 
 
-/* =========================
-   HISTORY LOAD
-========================= */
+function updateFan(){
+
+  const blades =
+  document.getElementById(
+    "fanBlades"
+  );
+
+  const air =
+  document.getElementById(
+    "air"
+  );
+
+  const status =
+  document.getElementById(
+    "fanStatus"
+  );
+
+  const button =
+  document.getElementById(
+    "fanButton"
+  );
+
+  blades.classList.remove(
+    "fan-running",
+    "speed1",
+    "speed2",
+    "speed3"
+  );
+
+  if(fanOn){
+
+    blades.classList.add(
+      "fan-running"
+    );
+
+    blades.classList.add(
+      "speed" + fanSpeed
+    );
+
+    air.classList.add(
+      "air-show"
+    );
+
+    status.innerText =
+    "🟢 Fan ON • Speed " +
+    fanSpeed;
+
+    button.innerText =
+    "⏹️ Turn Fan OFF";
+
+  }else{
+
+    air.classList.remove(
+      "air-show"
+    );
+
+    status.innerText =
+    "🔴 Fan OFF";
+
+    button.innerText =
+    "🌀 Turn Fan ON";
+
+  }
+
+}
+
+
+/* HISTORY LOAD */
 
 displayHistory();
 
 
-/* =========================
-   SERVICE WORKER
-========================= */
+/* SERVICE WORKER */
 
-if(
-"serviceWorker" in navigator
-) {
+if("serviceWorker" in navigator){
 
-window.addEventListener(
-"load",
-() => {
+  window.addEventListener(
+    "load",
+    ()=>{
+      
+      navigator.serviceWorker.register(
+        "/sw.js"
+      )
+      .then(()=>{
+        console.log(
+          "Lovepreet AI Service Worker registered"
+        );
+      })
+      .catch(error=>{
+        console.error(
+          "Service Worker registration failed:",
+          error
+        );
+      });
 
-navigator.serviceWorker.register(
-"/sw.js"
-);
-
-}
-);
+    }
+  );
 
 }
 
