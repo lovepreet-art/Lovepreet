@@ -1,1 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ERRA PLAY - Level 1</title>
 
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  background:#080b18;
+  color:white;
+  font-family:Arial,sans-serif;
+  overflow:hidden;
+  touch-action:none;
+}
+
+#game{
+  width:100vw;
+  height:100vh;
+  max-width:520px;
+  margin:auto;
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 20%,#263d75 0%,transparent 35%),
+    linear-gradient(#101a38,#070914);
+}
+
+/* TOP UI */
+.top{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:10;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+
+.info{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  padding:8px 12px;
+  border-radius:14px;
+  font-size:14px;
+}
+
+/* MISSION */
+.mission{
+  position:absolute;
+  top:70px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  text-align:center;
+  background:rgba(0,0,0,.3);
+  padding:10px;
+  border-radius:14px;
+  z-index:10;
+}
+
+.mission b{
+  color:#ffd84d;
+}
+
+/* GAME WORLD */
+.world{
+  position:absolute;
+  left:10%;
+  top:150px;
+  width:80%;
+  height:calc(100% - 250px);
+  border-radius:25px;
+  background:
+    linear-gradient(90deg,
+      rgba(255,255,255,.04) 0 2%,
+      transparent 2% 98%,
+      rgba(255,255,255,.04) 98%);
+  border:2px solid rgba(255,255,255,.08);
+}
+
+/* FINISH */
+.finish{
+  position:absolute;
+  top:15px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90px;
+  height:35px;
+  border-radius:10px;
+  background:linear-gradient(90deg,#00e676,#00bcd4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  box-shadow:0 0 20px rgba(0,230,118,.5);
+}
+
+/* PLAYER */
+.player{
+  position:absolute;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#ffdf4d,#ff7b00);
+  box-shadow:0 0 20px rgba(255,180,0,.7);
+  left:50%;
+  bottom:25px;
+  transform:translateX(-50%);
+  z-index:5;
+}
+
+.player::after{
+  content:"";
+  position:absolute;
+  width:10px;
+  height:10px;
+  background:white;
+  border-radius:50%;
+  top:9px;
+  left:9px;
+  box-shadow:15px 0 0 white;
+}
+
+/* OBSTACLES */
+.obstacle{
+  position:absolute;
+  width:55px;
+  height:55px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#ff3158,#a00035);
+  box-shadow:0 0 18px rgba(255,30,80,.5);
+}
+
+/* COINS */
+.coin{
+  position:absolute;
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  background:#ffd83d;
+  border:3px solid #fff1a0;
+  box-shadow:0 0 18px #ffd83d;
+  animation:coin 1s infinite alternate;
+}
+
+@keyframes coin{
+  from{transform:scale(.9)}
+  to{transform:scale(1.1)}
+}
+
+/* CONTROLS */
+.controls{
+  position:absolute;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  display:flex;
+  justify-content:space-between;
+  z-index:20;
+}
+
+.control{
+  width:75px;
+  height:60px;
+  border:none;
+  border-radius:18px;
+  background:rgba(255,255,255,.15);
+  color:white;
+  font-size:30px;
+  border:1px solid rgba(255,255,255,.2);
+}
+
+.control:active{
+  transform:scale(.92);
+  background:rgba(255,255,255,.28);
+}
+
+/* POPUP */
+.popup{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.72);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+  padding:25px;
+}
+
+.box{
+  width:100%;
+  max-width:350px;
+  text-align:center;
+  background:linear-gradient(145deg,#18234a,#0b1024);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:25px;
+  padding:30px 20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+
+.box h1{
+  margin-bottom:12px;
+}
+
+.box p{
+  color:#cbd2e8;
+  margin-bottom:20px;
+}
+
+.btn{
+  border:none;
+  padding:14px 25px;
+  border-radius:14px;
+  font-size:17px;
+  font-weight:bold;
+  color:white;
+  background:linear-gradient(90deg,#7c4dff,#00bcd4);
+}
+
+/* MOBILE */
+@media(max-width:400px){
+  .world{
+    left:7%;
+    width:86%;
+  }
+
+  .control{
+    width:65px;
+    height:55px;
+  }
+
+  .logo{
+    font-size:19px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+  <div class="top">
+    <div class="logo">ERRA PLAY</div>
+    <div class="info">🪙 <span id="coins">0</span></div>
+  </div>
+
+  <div class="mission">
+    🎯 Mission: <b>Collect 3 coins & reach FINISH</b>
+    <br>
+    ⏱️ Time: <span id="time">30</span>s
+  </div>
+
+  <div class="world">
+
+    <div class="finish">FINISH 🏁</div>
+
+    <div class="coin" style="top:150px;left:20%;"></div>
+    <div class="coin" style="top:270px;left:65%;"></div>
+    <div class="coin" style="top:410px;left:35%;"></div>
+
+    <div class="obstacle" style="top:220px;left:25%;"></div>
+    <div class="obstacle" style="top:340px;left:55%;"></div>
+    <div class="obstacle" style="top:500px;left:20%;"></div>
+
+    <div class="player" id="player"></div>
+
+  </div>
+
+  <div class="controls">
+    <button class="control" id="left">⬅️</button>
+    <button class="control" id="up">⬆️</button>
+    <button class="control" id="right">➡️</button>
+  </div>
+
+  <div class="popup" id="popup">
+    <div class="box">
+      <h1 id="resultTitle">🎉 Mission Complete!</h1>
+      <p id="resultText">Level 1 completed!</p>
+      <button class="btn" onclick="restart()">PLAY AGAIN</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const player = document.getElementById("player");
+const world = document.querySelector(".world");
+const coins = document.querySelectorAll(".coin");
+const obstacles = document.querySelectorAll(".obstacle");
+
+let x = 50;
+let y = 25;
+let collected = 0;
+let time = 30;
+let gameOver = false;
+
+const speed = 2.2;
+
+function updatePlayer(){
+  player.style.left = x + "%";
+  player.style.bottom = y + "px";
+}
+
+function move(direction){
+  if(gameOver) return;
+
+  if(direction === "left") x -= speed;
+  if(direction === "right") x += speed;
+  if(direction === "up") y += speed * 2;
+
+  x = Math.max(5, Math.min(95,x));
+  y = Math.max(25, Math.min(world.clientHeight - 60,y));
+
+  updatePlayer();
+
+  checkCoins();
+  checkFinish();
+  checkObstacles();
+}
+
+function getRect(el){
+  return el.getBoundingClientRect();
+}
+
+function touching(a,b){
+  const A=getRect(a);
+  const B=getRect(b);
+
+  return !(
+    A.right < B.left ||
+    A.left > B.right ||
+    A.bottom < B.top ||
+    A.top > B.bottom
+  );
+}
+
+function checkCoins(){
+  coins.forEach(c=>{
+    if(c.style.display !== "none" && touching(player,c)){
+      c.style.display="none";
+      collected++;
+      document.getElementById("coins").textContent=collected;
+    }
+  });
+}
+
+function checkObstacles(){
+  obstacles.forEach(o=>{
+    if(touching(player,o)){
+      endGame(false,"💥 Oops!");
+    }
+  });
+}
+
+function checkFinish(){
+  const finish=document.querySelector(".finish");
+
+  if(touching(player,finish) && collected>=3){
+    endGame(true,"🎉 LEVEL COMPLETE!");
+  }
+}
+
+function endGame(win,title){
+  if(gameOver) return;
+
+  gameOver=true;
+
+  document.getElementById("resultTitle").textContent=title;
+
+  if(win){
+    document.getElementById("resultText").textContent=
+      "🔥 Level 1 completed! Next level coming soon.";
+  }else{
+    document.getElementById("resultText").textContent=
+      "Mission failed. Try again!";
+  }
+
+  document.getElementById("popup").style.display="flex";
+}
+
+function restart(){
+  location.reload();
+}
+
+document.getElementById("left").addEventListener("touchstart",e=>{
+  e.preventDefault();
+  move("left");
+});
+
+document.getElementById("right").addEventListener("touchstart",e=>{
+  e.preventDefault();
+  move("right");
+});
+
+document.getElementById("up").addEventListener("touchstart",e=>{
+  e.preventDefault();
+  move("up");
+});
+
+/* Keyboard support */
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft") move("left");
+  if(e.key==="ArrowRight") move("right");
+  if(e.key==="ArrowUp") move("up");
+});
+
+/* TIMER */
+const timer=setInterval(()=>{
+  if(gameOver) return;
+
+  time--;
+  document.getElementById("time").textContent=time;
+
+  if(time<=0){
+    clearInterval(timer);
+    endGame(false,"⏰ TIME UP!");
+  }
+},1000);
+
+updatePlayer();
+</script>
+
+</body>
+</html>
